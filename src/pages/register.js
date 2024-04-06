@@ -43,7 +43,7 @@ export default function register() {
   }
 
   return (
-    <Center w="full" minH="100vh" as="main" px="2rem">
+    <Center w="full" minH="100vh" as="main">
       <Center h="10vh" w="full" position={"absolute"} top="0">
         <IconButton
           onClick={toggleColorMode}
@@ -59,16 +59,19 @@ export default function register() {
         align={"center"}
         justifyContent={"space-between"}
         w="full"
+        px="1.5rem"
+        
       >
         <Center
           minH="100vh"
-          boxShadow={["none", "none", "20px 0px 30px -25px rgba(0,0,0,0.5)"]}
+          boxShadow={["none", "none", "30px 0px 20px -30px rgba(0,0,0,0.5)"]}
           gap="2rem"
           flexDirection={"column"}
           w="full"
           alignItems={"center"}
           justifyContent={"center"}
           flex={"2"}
+          roundedRight='1.5rem'
         >
           <Image
             filter={useColorModeValue("none", "invert(1)")}
@@ -82,7 +85,7 @@ export default function register() {
             <Heading fontSize={"xl"}>
               Welcome to our Educational Platform!
             </Heading>
-            <Text textAlign={["center", "center", "left"]}>
+            <Text >
               We are excited to have you join our community of learners and
               educators.
             </Text>
@@ -94,9 +97,10 @@ export default function register() {
             justifyContent={"center"}
             gap="2.5rem"
             as="form"
-            p="2rem"
             onSubmit={handleSubmit(onSubmit)}
             w={["full", "full", "70%"]}
+            py='2rem'
+            
           >
             <VStack align={"start"} w='full'>
               <Heading>Sign Up Now</Heading>

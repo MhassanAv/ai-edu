@@ -15,7 +15,7 @@ export default function Home() {
       <Center w='full' h='100vh' >
       <MBox px='2rem' initial={{opacity:0,y:200}} animate={{opacity:1,y:0}} display={'flex'} alignItems={'center'} justifyContent={'center'} flexDirection={'column'} gap='2.5rem'>
       <Image filter={useColorModeValue("none","invert(1)")} src={"../logo.svg"} maxW='150px' boxSize={'150px'} alt="AI-EDU" />
-      <Heading>Welcome To AI-EDU</Heading>
+      <Heading textAlign={'center'} >Welcome To AI-EDU</Heading>
       <Text textAlign={'center'}> We are excited to have you join our community of learners and educators.</Text>
       <Flex flexWrap={'wrap'}  w='full' align={'center'} justify={'center'} gap='1rem'>
       <Button as={NextLink}  href={'/login'} py="1rem" w="full" bg="prim"   color={'white'} rounded="full">

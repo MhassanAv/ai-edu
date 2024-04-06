@@ -40,7 +40,7 @@ export default function login() {
   }
 
   return (
-    <Center w="full" h="100vh" as="main">
+    <Center w="full" h="100vh" as="main" >
       <Center
         h="10vh"
         w="full"
@@ -58,7 +58,9 @@ export default function login() {
         justifyContent={"center"}
         gap="2.5rem"
         as="form"
-        p="2rem"
+        px="1.5rem"
+        py='2rem'
+        
         onSubmit={handleSubmit(onSubmit)}
       >
         <VStack>
