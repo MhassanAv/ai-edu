@@ -65,7 +65,7 @@ const stylesTheme = {
       "body,html": {
         postion: "relative",
         fontSize: "16px",
-        backgroundColor: props.colorMode === "dark" ? "white" : "black",
+        color: props.colorMode === "dark" ? "white" : "black",
         backgroundColor: props.colorMode === "dark" ? "black" : "bg",
         w: "100%",
         padding: "0",
