@@ -37,13 +37,17 @@ import { PiSignOut } from "react-icons/pi";
 import useStore from "@/lib/store";
 import { useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { QueryCache, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Admin() {
-  const { user, signOut } = useStore();
+  const { user, setUser } = useStore();
   const [page, setPage] = useState("Members");
   const isActive = () => "prim";
   const { colorMode, toggleColorMode } = useColorMode();
-  console.log(page);
+  const queryClient = useQueryClient();
+  const mutation = useMutation({mutationKey:"user",mutationFn:()=>queryClient.removeQueries(['user']),onSuccess:()=>setUser(null)})
+  console.log(mutation.data)
+  console.log(user);
   return (
     <Flex h="100vh" w="full" gap="2rem">
       <VStack
@@ -106,7 +110,7 @@ export default function Admin() {
           </VStack>
         </VStack>
         <Button
-          onClick={() => signOut()}
+          onClick={()=>mutation.mutate()}
           color="red"
           leftIcon={<PiSignOut size="25px" />}
         >

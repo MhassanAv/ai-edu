@@ -10,8 +10,15 @@ import Admin from "@/components/dashboard/admin";
 
 export default function Dashboard() {
 
-  const {user,signIn} = useStore()
-  const  getUserData = ()=> axios.get('api/user').then(res=>signIn(res.data))
+  const {user,setUser} = useStore()
+  const  {data,isLoading,isError,refetch} = useQuery({queryKey:['user'],queryFn:()=>axios.get('api/user').then(res=>res.data),enabled:false})
+  useEffect(()=>{
+    if (data) {
+      setUser(data)
+   } else {
+    setUser(null)
+   }
+},[setUser,data])
 
   return (
     <>
@@ -21,7 +28,7 @@ export default function Dashboard() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {!user &&<Button onClick={getUserData} >get user</Button>}
+      {!user &&<Button isLoading={isLoading} onClick={()=>refetch()} >get user</Button>}
       {user?.role === 'admin' && <Admin/>}
     </>
   );
