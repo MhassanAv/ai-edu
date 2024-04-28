@@ -13,6 +13,7 @@ export default function Dashboard() {
   const {user,setUser} = useStore()
   const  {data,isLoading,isError,refetch} = useQuery({queryKey:['user'],queryFn:()=>axios.get('api/user').then(res=>res.data),enabled:false})
   useEffect(()=>{
+
     if (data) {
       setUser(data)
    } else {

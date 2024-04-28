@@ -35,19 +35,20 @@ import { CiBookmark, CiSettings } from "react-icons/ci";
 import { MdArrowDropDown, MdPayment } from "react-icons/md";
 import { PiSignOut } from "react-icons/pi";
 import useStore from "@/lib/store";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { QueryCache, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Admin() {
   const { user, setUser } = useStore();
   const [page, setPage] = useState("Members");
-  const isActive = () => "prim";
   const { colorMode, toggleColorMode } = useColorMode();
   const queryClient = useQueryClient();
   const mutation = useMutation({mutationKey:"user",mutationFn:()=>queryClient.removeQueries(['user']),onSuccess:()=>setUser(null)})
   console.log(mutation.data)
   console.log(user);
+  const pageRef = useRef(null)
+  const setActive = (currentPage) => {return currentPage === page ? 'prim' :  'none'}
   return (
     <Flex h="100vh" w="full" gap="2rem">
       <VStack
@@ -59,6 +60,7 @@ export default function Admin() {
         boxShadow={"lg"}
         h="full"
         bg={useColorModeValue("white", "gray.800")}
+        display={['none','none','none','flex']}
       >
         <VStack spacing={"7rem"} w="full">
           <Center maxW="7rem">
@@ -74,7 +76,6 @@ export default function Admin() {
                 alignItems: "center",
                 justifyContent: "start",
                 rounded: "0",
-                bg:'none',
                 _hover: {
                   bg: "prim",
                 },
@@ -82,28 +83,36 @@ export default function Admin() {
             }}
             align={"start"}
             spacing={"1rem"}
+            ref={pageRef}
           >
             <Button
               onClick={() => setPage("Members")}
               leftIcon={<FaUserGroup size="25px" />}
+              data-link="Members" 
+              bg={setActive("Members")}
             >
               Members
             </Button>
             <Button
               onClick={() => setPage("Courses")}
               leftIcon={<CiBookmark size="25px" />}
+              data-link="Courses" 
+              bg={setActive("Courses")}
             >
               Courses
             </Button>
             <Button
               onClick={() => setPage("Payment Details")}
               leftIcon={<MdPayment size="25px" />}
+              bg={setActive("Payment Details")}
             >
               Payment Details
             </Button>
             <Button
               onClick={() => setPage("Settings")}
               leftIcon={<CiSettings size="25px" />}
+              data-link="Settings" 
+              bg={setActive("Settings")}
             >
               Settings
             </Button>
@@ -117,7 +126,7 @@ export default function Admin() {
           Sign Out
         </Button>
       </VStack>
-      <VStack
+      {page ==='Members' &&<VStack
         flex="3.5"
         gap="2rem"
         align={"center"}
@@ -126,7 +135,7 @@ export default function Admin() {
         spacing={"0rem"}
         px="4rem"
       >
-        <HStack w="full" alignItems={'center'} justifyContent={'space-between'}>
+        <Flex flexWrap={['wrap','wrap','nowrap']} w="full" alignItems={'center'} justifyContent={'space-between'}>
           <Center
             w="full"
             maxW="40rem"
@@ -154,7 +163,7 @@ export default function Admin() {
             {colorMode === "dark" ? <MdDarkMode /> : <MdLightMode />}
           </IconButton>
           <Menu>
-            <MenuButton  w='full' maxW='20rem' bg={useColorModeValue("white", "gray.800")}  h='5.625rem' as={Button} rightIcon={<MdArrowDropDown />}>
+            <MenuButton  w='full' maxW={['full','full','20rem']} bg={useColorModeValue("white", "gray.800")}  h='5.625rem' as={Button} rightIcon={<MdArrowDropDown />}>
               <HStack>
             <Avatar name={user?.name} src='https://bit.ly/sage-adebayo' />
             <VStack>
@@ -164,11 +173,11 @@ export default function Admin() {
             </HStack>
             </MenuButton>
             <MenuList>
-              <MenuItem>Change Name</MenuItem>
-              <MenuItem>Sign Out</MenuItem>
+              <MenuItem >Change Name</MenuItem>
+              <MenuItem onClick={()=>mutation.mutate()}>Sign Out</MenuItem>
             </MenuList>
           </Menu>
-        </HStack>
+        </Flex>
         <VStack
           w="full"
           align={"start"}
@@ -269,7 +278,7 @@ export default function Admin() {
             </TableContainer>
           </Box>
         </VStack>
-      </VStack>
+      </VStack>}
     </Flex>
   );
 }
