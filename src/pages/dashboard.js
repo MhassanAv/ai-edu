@@ -6,7 +6,8 @@ import useStore from "@/lib/store";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import Admin from "@/components/dashboard/admin";
+import Admin from "@/components/Admin";
+
 
 export default function Dashboard() {
 
@@ -30,7 +31,7 @@ export default function Dashboard() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {!user &&<Button isLoading={isLoading} onClick={()=>refetch()} >get user</Button>}
-      {user?.role === 'admin' && <Admin/>}
+      {user?.role === 'admin' &&<Admin/>}
     </>
   );
 }
