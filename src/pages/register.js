@@ -22,6 +22,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import NextLink from "next/link";
+import useStore from "@/lib/store";
 export default function register() {
   const [isHidden, setIsHidden] = useState(true);
 
@@ -31,15 +32,23 @@ export default function register() {
     formState: { errors, isSubmitting },
   } = useForm();
 
+  const {user,setUser} = useStore()
+
   const { colorMode, toggleColorMode } = useColorMode();
+  const  {data,isLoading,refetch} = useQuery({queryKey:['user'],queryFn:()=>axios.post('api/user').then(res=>res.data),enabled:false})
+  useEffect(()=>{
+
+    if (data) {
+      setUser(data)
+   } else {
+    setUser(null)
+   }
+},[setUser,data])
+
 
   function onSubmit(values) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        resolve();
-      }, 3000);
-    });
+    // adding logic for submitting form using react query
+    };
   }
 
   return (
@@ -106,12 +115,12 @@ export default function register() {
               <Heading>Sign Up Now</Heading>
               <Text textAlign={"center"}>Create new account</Text>
             </VStack>
-            <FormControl variant="floating" isInvalid={errors.name} isRequired>
+            <FormControl variant="floating" isInvalid={errors.full_name} isRequired>
               <Input
                 placeholder=" "
                 type="text"
-                id="name"
-                {...register("name", {
+                id="full_name"
+                {...register("full_name", {
                   required: "This is required",
                   minLength: {
                     value: 4,
@@ -120,13 +129,13 @@ export default function register() {
                 })}
               />
               <FormLabel
-                htmlFor="name"
+                htmlFor="full_name"
                 bgColor={useColorModeValue("bg !important", "black !important")}
               >
                 Full Name
               </FormLabel>
               <FormErrorMessage>
-                {errors.name && errors.name.message}
+                {errors.full_name && errors.full_name.message}
               </FormErrorMessage>
             </FormControl>
 
@@ -151,6 +160,30 @@ export default function register() {
               </FormLabel>
               <FormErrorMessage>
                 {errors.email && errors.email.message}
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl variant="floating" isInvalid={errors.level} isRequired>
+              <Input
+                placeholder=" "
+                type="text"
+                id="level"
+                {...register("level", {
+                  required: "This is required",
+                  minLength: {
+                    value: 1,
+                    message: "Minimum length should be 1",
+                  },
+                })}
+              />
+              <FormLabel
+                htmlFor="level"
+                bgColor={useColorModeValue("bg !important", "black !important")}
+              >
+                Level
+              </FormLabel>
+              <FormErrorMessage>
+                {errors.level && errors.level.message}
               </FormErrorMessage>
             </FormControl>
 
@@ -248,31 +281,31 @@ export default function register() {
             </FormControl>
 
 
-            <FormControl variant="floating" isInvalid={errors.id} isRequired>
+            <FormControl variant="floating" isInvalid={errors.national_id} isRequired>
               <Input
                 placeholder=" "
                 type="text"
-                id="id"
-                {...register("id", {
+                id="national_id"
+                {...register("national_id", {
                   required: "This is required",
                   minLength: {
-                    value: 4,
-                    message: "Minimum length should be 4",
+                    value: 11,
+                    message: "Minimum length should be 11",
                   },
                 })}
               />
               <FormLabel
-                htmlFor="id"
+                htmlFor="national_id"
                 bgColor={useColorModeValue("bg !important", "black !important")}
               >
                 National ID
               </FormLabel>
               <FormErrorMessage>
-                {errors.id && errors.id.message}
+                {errors.national_id && errors.id.message}
               </FormErrorMessage>
             </FormControl>
             <Button
-              isLoading={isSubmitting}
+              isLoading={isSubmitting || isLoading}
               type="submit"
               py="1rem"
               w="full"
