@@ -49,7 +49,6 @@ export default function register() {
   function onSubmit(values) {
     // adding logic for submitting form using react query
     };
-  }
 
   return (
     <Center w="full" minH="100vh" as="main">
