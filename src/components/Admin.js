@@ -1,20 +1,8 @@
-import {
-  Heading,
-  VStack,
-  useColorModeValue,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Box,
-} from "@chakra-ui/react";
 import useStore from "@/lib/store";
 import Members from "./dashboard/Admin/Members";
 import Layout from "./Layout";
 import Courses from "./dashboard/Admin/Courses";
+import Payment from "./dashboard/Admin/Payment";
 
 export default function Admin() {
   const { page } = useStore();
@@ -22,6 +10,7 @@ export default function Admin() {
     <Layout>
       {page === "Members" && <Members />}
       {page === "Courses" && <Courses />}
+      {page === "Payment" && <Payment />}
     </Layout>
   );
 }

@@ -32,12 +32,13 @@ import {
 
 import { FaUserGroup } from "react-icons/fa6";
 import { CiBookmark, CiSettings } from "react-icons/ci";
-import { MdArrowDropDown, MdPayment } from "react-icons/md";
+import { MdArrowDropDown, MdFileOpen, MdPayment } from "react-icons/md";
 import { PiSignOut } from "react-icons/pi";
 import useStore from "@/lib/store";
 import { useEffect, useRef, useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { QueryCache, useMutation, useQueryClient } from "@tanstack/react-query";
+import { FaHome } from "react-icons/fa";
 
 export default function Layout({ children }) {
   const { user, setUser, page, setPage } = useStore();
@@ -90,14 +91,26 @@ export default function Layout({ children }) {
             spacing={"1rem"}
             ref={pageRef}
           >
-            <Button
-              onClick={() => setPage("Members")}
-              leftIcon={<FaUserGroup size="25px" />}
-              data-link="Members"
-              bg={setActive("Members")}
-            >
-              Members
-            </Button>
+            {user.role !== "admin" ? (
+              <Button
+                onClick={() => setPage("Home")}
+                leftIcon={<FaHome size="25px" />}
+                data-link="Home"
+                bg={setActive("Home")}
+              >
+                Home
+              </Button>
+            ) : null}
+            {user.role === "admin" ? (
+              <Button
+                onClick={() => setPage("Members")}
+                leftIcon={<FaUserGroup size="25px" />}
+                data-link="Members"
+                bg={setActive("Members")}
+              >
+                Members
+              </Button>
+            ) : null}
             <Button
               onClick={() => setPage("Courses")}
               leftIcon={<CiBookmark size="25px" />}
@@ -106,13 +119,25 @@ export default function Layout({ children }) {
             >
               Courses
             </Button>
-            <Button
-              onClick={() => setPage("Payment Details")}
-              leftIcon={<MdPayment size="25px" />}
-              bg={setActive("Payment Details")}
-            >
-              Payment Details
-            </Button>
+            {user.role === "student" || user.role === "admin" ? (
+              <Button
+                onClick={() => setPage("Payment")}
+                leftIcon={<MdPayment size="25px" />}
+                bg={setActive("Payment")}
+              >
+                Payment Details
+              </Button>
+            ) : null}
+            {user.role === "student" || user.role === "instractor" ? (
+              <Button
+                onClick={() => setPage("Exams")}
+                leftIcon={<MdFileOpen size="25px" />}
+                bg={setActive("Exams")}
+              >
+                Exams
+              </Button>
+            ) : null}
+
             <Button
               onClick={() => setPage("Settings")}
               leftIcon={<CiSettings size="25px" />}
