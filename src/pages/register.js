@@ -15,11 +15,12 @@ import {
   useColorMode,
   useColorModeValue,
   Select,
-  chakra
+  chakra,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import NextLink from "next/link";
 import useStore from "@/lib/store";
@@ -32,23 +33,25 @@ export default function register() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const {user,setUser} = useStore()
+  const { user, setUser } = useStore();
 
   const { colorMode, toggleColorMode } = useColorMode();
-  const  {data,isLoading,refetch} = useQuery({queryKey:['user'],queryFn:()=>axios.post('api/user').then(res=>res.data),enabled:false})
-  useEffect(()=>{
-
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => axios.post("api/user").then((res) => res.data),
+    enabled: false,
+  });
+  useEffect(() => {
     if (data) {
-      setUser(data)
-   } else {
-    setUser(null)
-   }
-},[setUser,data])
-
+      setUser(data);
+    } else {
+      setUser(null);
+    }
+  }, [setUser, data]);
 
   function onSubmit(values) {
     // adding logic for submitting form using react query
-    };
+  }
 
   return (
     <Center w="full" minH="100vh" as="main">
@@ -68,7 +71,6 @@ export default function register() {
         justifyContent={"space-between"}
         w="full"
         px="1.5rem"
-        
       >
         <Center
           minH="100vh"
@@ -79,7 +81,7 @@ export default function register() {
           alignItems={"center"}
           justifyContent={"center"}
           flex={"2"}
-          roundedRight='1.5rem'
+          roundedRight="1.5rem"
         >
           <Image
             filter={useColorModeValue("none", "invert(1)")}
@@ -93,7 +95,7 @@ export default function register() {
             <Heading fontSize={"xl"}>
               Welcome to our Educational Platform!
             </Heading>
-            <Text >
+            <Text>
               We are excited to have you join our community of learners and
               educators.
             </Text>
@@ -107,14 +109,17 @@ export default function register() {
             as="form"
             onSubmit={handleSubmit(onSubmit)}
             w={["full", "full", "70%"]}
-            py='2rem'
-            
+            py="2rem"
           >
-            <VStack align={"start"} w='full'>
+            <VStack align={"start"} w="full">
               <Heading>Sign Up Now</Heading>
               <Text textAlign={"center"}>Create new account</Text>
             </VStack>
-            <FormControl variant="floating" isInvalid={errors.full_name} isRequired>
+            <FormControl
+              variant="floating"
+              isInvalid={errors.full_name}
+              isRequired
+            >
               <Input
                 placeholder=" "
                 type="text"
@@ -189,7 +194,7 @@ export default function register() {
             <FormControl variant="floating" isInvalid={errors.role} isRequired>
               <Select
                 placeholder="Select Role"
-                type='text'
+                type="text"
                 id="role"
                 {...register("role", {
                   required: "This is required",
@@ -258,7 +263,7 @@ export default function register() {
             <FormControl variant="floating" isInvalid={errors.phone} isRequired>
               <Input
                 placeholder=" "
-                type='text'
+                type="text"
                 id="phone"
                 {...register("phone", {
                   required: "This is required",
@@ -279,8 +284,11 @@ export default function register() {
               </FormErrorMessage>
             </FormControl>
 
-
-            <FormControl variant="floating" isInvalid={errors.national_id} isRequired>
+            <FormControl
+              variant="floating"
+              isInvalid={errors.national_id}
+              isRequired
+            >
               <Input
                 placeholder=" "
                 type="text"
@@ -311,11 +319,16 @@ export default function register() {
               bg="prim"
               color="white"
               rounded="full"
-              maxW={['full','full','80%']}
+              maxW={["full", "full", "80%"]}
             >
               Create an account
             </Button>
-            <Text>Already have an account? <chakra.span color='prim' as={NextLink} href='/login'>Log in</chakra.span></Text>
+            <Text>
+              Already have an account?{" "}
+              <chakra.span color="prim" as={NextLink} href="/login">
+                Log in
+              </chakra.span>
+            </Text>
           </VStack>
         </Center>
       </Flex>
