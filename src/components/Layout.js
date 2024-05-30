@@ -39,15 +39,20 @@ import { useEffect, useRef, useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { QueryCache, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaHome } from "react-icons/fa";
+import { useRouter } from "next/router";
 
 export default function Layout({ children }) {
   const { user, setUser, page, setPage } = useStore();
   const { colorMode, toggleColorMode } = useColorMode();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationKey: "user",
     mutationFn: () => queryClient.removeQueries(["user"]),
-    onSuccess: () => setUser(null),
+    onSuccess: () => {
+      router.push("/login");
+      setUser(null);
+    },
   });
   console.log(mutation.data);
   console.log(user);
@@ -188,7 +193,7 @@ export default function Layout({ children }) {
               fontSize={"textSize"}
               fontFamily={"var(--font-open-sans)"}
             >
-              Hello {user?.name} Welcome Back!
+              Hello {user?.full_name} Welcome Back!
             </Heading>
           </Center>
 
@@ -205,9 +210,12 @@ export default function Layout({ children }) {
               rightIcon={<MdArrowDropDown />}
             >
               <HStack>
-                <Avatar name={user?.name} src="https://bit.ly/sage-adebayo" />
+                <Avatar
+                  name={user?.full_name}
+                  src="https://bit.ly/sage-adebayo"
+                />
                 <VStack>
-                  <Heading fontSize={"1.3rem"}>{user?.name}</Heading>
+                  <Heading fontSize={"1.3rem"}>{user?.full_name}</Heading>
                   <Heading fontSize={"1rem"} color="prim" fontWeight={"300"}>
                     {user?.role}
                   </Heading>

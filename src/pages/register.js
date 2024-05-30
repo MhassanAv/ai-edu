@@ -20,10 +20,11 @@ import {
 import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import NextLink from "next/link";
 import useStore from "@/lib/store";
+import axios from "axios";
 export default function register() {
   const [isHidden, setIsHidden] = useState(true);
 
@@ -33,24 +34,27 @@ export default function register() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const { user, setUser } = useStore();
+  const { user, setUser, setToken } = useStore();
 
   const { colorMode, toggleColorMode } = useColorMode();
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["user"],
-    queryFn: () => axios.post("api/user").then((res) => res.data),
-    enabled: false,
-  });
-  useEffect(() => {
-    if (data) {
-      setUser(data);
-    } else {
+  const mutation = useMutation({
+    mutationFn: async (bodyData) =>
+      await axios.post("http://localhost:3000/api/v1/auth/register", bodyData),
+    mutationKey: ["user"],
+    onSuccess: (res) => {
+      console.log(res.data);
+      setUser(res.data);
+    },
+    onError: (e) => {
+      console.log(e);
       setUser(null);
-    }
-  }, [setUser, data]);
+    },
+  });
 
   function onSubmit(values) {
-    // adding logic for submitting form using react query
+    mutation.mutate(values);
+    console.log(user);
+    console.log(values);
   }
 
   return (
@@ -143,7 +147,7 @@ export default function register() {
               </FormErrorMessage>
             </FormControl>
 
-            <FormControl variant="floating" isInvalid={errors.email} isRequired>
+            {/* <FormControl variant="floating" isInvalid={errors.email} isRequired>
               <Input
                 placeholder=" "
                 type="email"
@@ -165,7 +169,7 @@ export default function register() {
               <FormErrorMessage>
                 {errors.email && errors.email.message}
               </FormErrorMessage>
-            </FormControl>
+            </FormControl> */}
 
             <FormControl variant="floating" isInvalid={errors.level} isRequired>
               <Input
@@ -174,6 +178,7 @@ export default function register() {
                 id="level"
                 {...register("level", {
                   required: "This is required",
+                  valueAsNumber: true,
                   minLength: {
                     value: 1,
                     message: "Minimum length should be 1",
@@ -200,8 +205,8 @@ export default function register() {
                   required: "This is required",
                 })}
               >
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
+                <option value="student">student</option>
+                <option value="teacher">teacher</option>
               </Select>
               <FormLabel
                 htmlFor="role"
@@ -241,7 +246,7 @@ export default function register() {
               <Input
                 placeholder=" "
                 type={isHidden ? "password" : "text"}
-                {...register("pass", {
+                {...register("password", {
                   required: "This is required",
                   minLength: {
                     value: 4,
@@ -308,11 +313,11 @@ export default function register() {
                 National ID
               </FormLabel>
               <FormErrorMessage>
-                {errors.national_id && errors.id.message}
+                {errors.national_id && errors.national_id.message}
               </FormErrorMessage>
             </FormControl>
             <Button
-              isLoading={isSubmitting || isLoading}
+              isLoading={isSubmitting}
               type="submit"
               py="1rem"
               w="full"

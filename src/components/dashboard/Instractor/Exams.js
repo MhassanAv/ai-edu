@@ -27,7 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineDocumentAdd } from "react-icons/hi";
 
-export default function Courses() {
+export default function Exams() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const FormModal = () => (
