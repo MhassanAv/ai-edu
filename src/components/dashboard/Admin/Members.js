@@ -13,9 +13,12 @@ import {
   Box,
   Button,
   useToast,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { FaTrash } from "react-icons/fa";
 
 export default function Members() {
   const queryClient = useQueryClient();
@@ -82,6 +85,7 @@ export default function Members() {
             <Table variant="simple" colorScheme="purple" w="full">
               <Thead>
                 <Tr>
+                  <Th>ID</Th>
                   <Th>Name</Th>
                   <Th>Level</Th>
                   <Th>National ID</Th>
@@ -89,34 +93,43 @@ export default function Members() {
                 </Tr>
               </Thead>
               <Tbody>
-                {getStudents.data?.data.map((student) => (
-                  <Tr key={student.student_id}>
-                    <Td>{student.full_name}</Td>
-                    <Td>{student.level}</Td>
-                    <Td>{student.national_id}</Td>
-                    <Td>
-                      <Button
-                        variant={"outline"}
-                        onClick={() =>
-                          modifyUserState.mutate({
-                            user: student.student_id,
-                            value: !student.isActive,
-                          })
-                        }
-                      >{`${student.isActive ? "active" : "disabled"}`}</Button>
-                      <Button
-                        variant={"outline"}
-                        onClick={() =>
-                          deleteUser.mutate({
-                            user: student.student_id,
-                          })
-                        }
-                      >
-                        Delete
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
+                {getStudents.isLoading ? (
+                  <Center minH="20vh" w="full">
+                    <Spinner />
+                  </Center>
+                ) : (
+                  getStudents.data?.data.map((student) => (
+                    <Tr key={student.student_id}>
+                      <Td>{student.student_id}</Td>
+                      <Td>{student.full_name}</Td>
+                      <Td>{student.level}</Td>
+                      <Td>{student.national_id}</Td>
+                      <Td>
+                        <Button
+                          colorScheme={student.isActive ? "green" : "red"}
+                          mr="0.5rem"
+                          onClick={() =>
+                            modifyUserState.mutate({
+                              user: student.student_id,
+                              value: !student.isActive,
+                            })
+                          }
+                        >{`${
+                          student.isActive ? "active" : "disabled"
+                        }`}</Button>
+                        <Button
+                          onClick={() =>
+                            deleteUser.mutate({
+                              user: student.student_id,
+                            })
+                          }
+                        >
+                          <FaTrash />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))
+                )}
               </Tbody>
             </Table>
           </TableContainer>
@@ -136,39 +149,49 @@ export default function Members() {
             <Table variant="simple" colorScheme="purple" w="full">
               <Thead>
                 <Tr>
+                  <Th>ID</Th>
                   <Th>Name</Th>
                   <Th>National ID</Th>
                   <Th>Modify</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {getTeachers.data?.data.map((teacher) => (
-                  <Tr key={teacher._id}>
-                    <Td>{teacher.full_name}</Td>
-                    <Td>{teacher.national_id}</Td>
-                    <Td>
-                      <Button
-                        variant={"outline"}
-                        onClick={() =>
-                          modifyUserState.mutate({
-                            user: teacher._id,
-                            value: !teacher.isActive,
-                          })
-                        }
-                      >{`${teacher.isActive ? "active" : "disabled"}`}</Button>
-                      <Button
-                        variant={"outline"}
-                        onClick={() =>
-                          deleteUser.mutate({
-                            user: teacher._id,
-                          })
-                        }
-                      >
-                        Delete
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
+                {getTeachers.isLoading ? (
+                  <Center minH="20vh" w="full">
+                    <Spinner />
+                  </Center>
+                ) : (
+                  getTeachers.data?.data.map((teacher) => (
+                    <Tr key={teacher._id} w="full">
+                      <Td>{teacher._id}</Td>
+                      <Td>{teacher.full_name}</Td>
+                      <Td>{teacher.national_id}</Td>
+                      <Td>
+                        <Button
+                          colorScheme={teacher.isActive ? "green" : "red"}
+                          mr="0.5rem"
+                          onClick={() =>
+                            modifyUserState.mutate({
+                              user: teacher._id,
+                              value: !teacher.isActive,
+                            })
+                          }
+                        >{`${
+                          teacher.isActive ? "active" : "disabled"
+                        }`}</Button>
+                        <Button
+                          onClick={() =>
+                            deleteUser.mutate({
+                              user: teacher._id,
+                            })
+                          }
+                        >
+                          <FaTrash />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))
+                )}
               </Tbody>
             </Table>
           </TableContainer>

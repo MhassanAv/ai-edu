@@ -19,10 +19,11 @@ import { useEffect } from "react";
 import Admin from "@/components/Admin";
 import Student from "@/components/Student";
 import Instractor from "@/components/Instractor";
+import { useRouter } from "next/router";
 
 export default function Dashboard() {
   const { user, setUser, setPage } = useStore();
-  console.log(user);
+  const router = useRouter();
   useEffect(() => {
     user?.role !== "admin" ? setPage("Home") : setPage("Members");
   }, [user, setUser]);

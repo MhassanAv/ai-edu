@@ -21,11 +21,12 @@ import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { get, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import NextLink from "next/link";
 import useStore from "@/lib/store";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useRef } from "react";
 export default function register() {
   const [isHidden, setIsHidden] = useState(true);
   const router = useRouter();
@@ -37,8 +38,8 @@ export default function register() {
     getValues,
   } = useForm();
 
-  const teacher = getValues("role") === "teacher" ? true : false;
-  console.log(teacher);
+  const roleSelect = getValues("role");
+  console.log(roleSelect);
 
   const { user, setUser } = useStore();
 
@@ -187,7 +188,7 @@ export default function register() {
               </FormErrorMessage>
             </FormControl> */}
 
-            {!teacher && (
+            {roleSelect && (
               <FormControl
                 variant="floating"
                 isInvalid={errors.level}
@@ -226,9 +227,6 @@ export default function register() {
                 placeholder="Select Role"
                 type="text"
                 id="role"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                }}
                 {...register("role", {
                   required: "This is required",
                 })}

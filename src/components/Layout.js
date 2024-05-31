@@ -46,7 +46,7 @@ export default function Layout({ children }) {
   const { colorMode, toggleColorMode } = useColorMode();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const mutation = useMutation({
+  const SignOut = useMutation({
     mutationKey: "user",
     mutationFn: () => queryClient.removeQueries(["user"]),
     onSuccess: () => {
@@ -55,8 +55,6 @@ export default function Layout({ children }) {
       setUser(null);
     },
   });
-  console.log(mutation.data);
-  console.log(user);
   const pageRef = useRef(null);
   const setActive = (currentPage) => {
     return currentPage === page ? "prim" : "none";
@@ -155,7 +153,7 @@ export default function Layout({ children }) {
           </VStack>
         </VStack>
         <Button
-          onClick={() => mutation.mutate()}
+          onClick={() => SignOut.mutate()}
           color="red"
           leftIcon={<PiSignOut size="25px" />}
         >
@@ -225,7 +223,7 @@ export default function Layout({ children }) {
             </MenuButton>
             <MenuList>
               <MenuItem>Change Name</MenuItem>
-              <MenuItem onClick={() => mutation.mutate()}>Sign Out</MenuItem>
+              <MenuItem onClick={() => SignOut.mutate()}>Sign Out</MenuItem>
             </MenuList>
           </Menu>
         </Flex>

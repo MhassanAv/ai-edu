@@ -214,12 +214,14 @@ export default function Courses() {
                 })}
               >
                 <option value={null}> None</option>
-                {getTeachers.data?.data ? (
+                {getTeachers.isLoading ? (
+                  <Center minH="20vh" w="full">
+                    <Spinner />
+                  </Center>
+                ) : (
                   getTeachers.data?.data.map((teacher) => (
                     <option value={teacher._id}>{teacher.full_name}</option>
                   ))
-                ) : (
-                  <Spinner />
                 )}
               </Select>
             </FormControl>
@@ -282,23 +284,29 @@ export default function Courses() {
                 </Tr>
               </Thead>
               <Tbody>
-                {getCourses.data?.data.map((course) => (
-                  <Tr key={course.subject_id}>
-                    <Th>{course.subject_name}</Th>
-                    <Th>{course.level}</Th>
-                    <Th>{course.teacher_name}</Th>
-                    <Th>
-                      <Button
-                        onClick={() => {
-                          SetCurrCourse(course);
-                          onOpenModify();
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </Th>
-                  </Tr>
-                ))}
+                {getCourses.isLoading ? (
+                  <Center minH="20vh" w="full">
+                    <Spinner />
+                  </Center>
+                ) : (
+                  getCourses.data?.data.map((course) => (
+                    <Tr key={course.subject_id}>
+                      <Th>{course.subject_name}</Th>
+                      <Th>{course.level}</Th>
+                      <Th>{course.teacher_name}</Th>
+                      <Th>
+                        <Button
+                          onClick={() => {
+                            SetCurrCourse(course);
+                            onOpenModify();
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </Th>
+                    </Tr>
+                  ))
+                )}
               </Tbody>
             </Table>
           </TableContainer>

@@ -11,11 +11,155 @@ import {
   TableContainer,
   Box,
   HStack,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Input,
+  useDisclosure,
+  FormControl,
+  FormLabel,
+  useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 export default function Payment() {
+  const toast = useToast();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm();
+  const {
+    isOpen: isOpenAdd,
+    onOpen: onOpenAdd,
+    onClose: onCloseAdd,
+  } = useDisclosure();
+  const getPayments = useQuery({
+    queryKey: ["payments"],
+    queryFn: async () =>
+      await axios.get("http://localhost:3000/api/v1/admin/payment"),
+  });
+
+  const deletePayment = useMutation({
+    mutationKey: ["payments"],
+    mutationFn: async (bodyData) =>
+      await axios.delete("http://localhost:3000/api/v1/admin/payment", {
+        data: bodyData,
+      }),
+    onSuccess: () =>
+      toast({
+        title: "Payment Deleted",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }),
+    onSettled: () => queryClient.invalidateQueries(["payments"]),
+  });
+
+  const addPayment = useMutation({
+    mutationKey: ["payments"],
+    mutationFn: async (bodyData) =>
+      await axios.post("http://localhost:3000/api/v1/admin/payment", bodyData),
+    onSuccess: () =>
+      toast({
+        title: "Payment Added",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }),
+    onSettled: () => queryClient.invalidateQueries(["payments"]),
+  });
+
+  const AddModal = () => {
+    function onSubmit(values) {
+      addPayment.mutate(values);
+      onCloseAdd();
+    }
+    return (
+      <Modal isOpen={isOpenAdd} onClose={onCloseAdd}>
+        <ModalOverlay />
+        <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
+          <ModalHeader>Add Payment</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl isInvalid={errors.level} isRequired>
+              <FormLabel htmlFor="level">Level</FormLabel>
+              <Input
+                placeholder="Level"
+                type="number"
+                {...register("level", {
+                  required: "This is required",
+                  valueAsNumber: true,
+                })}
+              />
+
+              <FormErrorMessage>
+                {errors.level && errors.level.message}
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={errors.amount} isRequired>
+              <FormLabel htmlFor="amount">Amount</FormLabel>
+              <Input
+                placeholder="Amount"
+                type="nubmer"
+                {...register("amount", {
+                  required: "This is required",
+                  valueAsNumber: true,
+                })}
+              />
+
+              <FormErrorMessage>
+                {errors.amount && errors.amount.message}
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Vodafone Cash</FormLabel>
+              <Input
+                placeholder="Vodafone Cash"
+                type="text"
+                {...register("vodafoneCash", {
+                  required: "This is required",
+                })}
+              />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>InstaPay</FormLabel>
+              <Input
+                placeholder="InstaPay"
+                type="text"
+                {...register("instaPay", {
+                  required: "This is required",
+                })}
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="purple" type="submit" mr={3}>
+              Add
+            </Button>
+            <Button onClick={onCloseAdd}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
   return (
     <>
+      <AddModal />
       <HStack w="full" maxH="30vh" spacing={"2rem"}>
         <VStack
           w="full"
@@ -38,20 +182,26 @@ export default function Payment() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  <Tr>
-                    <Td>1</Td>
-                    <Td>VALUE</Td>
-                    <Td w="full">Activate</Td>
-                  </Tr>
-                  <Tr>
-                    <Td>1</Td>
-                    <Td>VALUE</Td>
-                    <Td w="full">Activate</Td>
-                  </Tr>
+                  {getPayments.data?.data.map((payment, index) => (
+                    <Tr key={payment.amount + index}>
+                      <Td>{payment.level}</Td>
+                      <Td>{payment.amount}</Td>
+                      <Td w="full">
+                        <Button
+                          onClick={() =>
+                            deletePayment.mutate({ level: payment.level })
+                          }
+                        >
+                          Delete
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))}
                 </Tbody>
               </Table>
             </TableContainer>
           </Box>
+          <Button onClick={onOpenAdd}>Add Payment</Button>
         </VStack>
         <VStack
           w="full"
