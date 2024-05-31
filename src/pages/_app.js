@@ -13,12 +13,14 @@ function MyApp({ Component, pageProps }) {
   const { user, setUser } = useStore();
 
   useEffect(() => {
+    const loggedInUser = localStorage.getItem("user");
+    if (loggedInUser !== null) {
+      setUser(JSON.parse(loggedInUser));
+    }
     if (user) {
       router.push("/dashboard");
-    } else {
-      return;
     }
-  }, [setUser, user]);
+  }, []);
   return (
     <>
       <style jsx global>

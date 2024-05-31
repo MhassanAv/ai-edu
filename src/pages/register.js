@@ -42,12 +42,23 @@ export default function register() {
       await axios.post("http://localhost:3000/api/v1/auth/register", bodyData),
     mutationKey: ["user"],
     onSuccess: (res) => {
-      console.log(res.data);
       setUser(res.data);
+      toast({
+        title: "Login Successful",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     },
     onError: (e) => {
-      console.log(e);
       setUser(null);
+      toast({
+        title: "Failed",
+        description: e.response.data.msg,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     },
   });
 

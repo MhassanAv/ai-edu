@@ -51,6 +51,7 @@ export default function Layout({ children }) {
     mutationFn: () => queryClient.removeQueries(["user"]),
     onSuccess: () => {
       router.push("/login");
+      localStorage.removeItem("user");
       setUser(null);
     },
   });

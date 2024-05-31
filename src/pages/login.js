@@ -13,8 +13,10 @@ import {
   IconButton,
   useColorMode,
   useColorModeValue,
+  useToast,
+  Spinner,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useForm } from "react-hook-form";
@@ -22,15 +24,25 @@ import NextLink from "next/link";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import useStore from "@/lib/store";
+import { useRouter } from "next/router";
 export default function login() {
   const [isHidden, setIsHidden] = useState(true);
   const { user, setUser } = useStore();
+  const toast = useToast();
+  const router = useRouter();
 
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
   } = useForm();
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("user");
+    if (loggedInUser) {
+      router.push("/dashboard");
+    }
+  }, [user]);
 
   const { colorMode, toggleColorMode } = useColorMode();
   const mutation = useMutation({
@@ -39,10 +51,24 @@ export default function login() {
     mutationKey: ["user"],
     onSuccess: (res) => {
       setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      router.push("/dashboard");
+      toast({
+        title: "Login Successful",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     },
     onError: (e) => {
-      alert(e.response.data.msg);
       setUser(null);
+      toast({
+        title: "Failed",
+        description: e.response.data.msg,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     },
   });
 
