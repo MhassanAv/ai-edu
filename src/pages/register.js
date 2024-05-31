@@ -21,20 +21,26 @@ import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { get, useForm } from "react-hook-form";
 import NextLink from "next/link";
 import useStore from "@/lib/store";
 import axios from "axios";
+import { useRouter } from "next/router";
 export default function register() {
   const [isHidden, setIsHidden] = useState(true);
+  const router = useRouter();
 
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
+    getValues,
   } = useForm();
 
-  const { user, setUser, setToken } = useStore();
+  const teacher = getValues("role") === "teacher" ? true : false;
+  console.log(teacher);
+
+  const { user, setUser } = useStore();
 
   const { colorMode, toggleColorMode } = useColorMode();
   const mutation = useMutation({
@@ -43,29 +49,28 @@ export default function register() {
     mutationKey: ["user"],
     onSuccess: (res) => {
       setUser(res.data);
+      console.log(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      router.push("/dashboard");
       toast({
-        title: "Login Successful",
+        title: "Created Successfully",
         status: "success",
         duration: 9000,
         isClosable: true,
       });
     },
     onError: (e) => {
-      setUser(null);
       toast({
         title: "Failed",
-        description: e.response.data.msg,
+        description: e.response.data.error.msg,
         status: "error",
         duration: 9000,
         isClosable: true,
       });
     },
   });
-
   function onSubmit(values) {
     mutation.mutate(values);
-    console.log(user);
-    console.log(values);
   }
 
   return (
@@ -182,36 +187,48 @@ export default function register() {
               </FormErrorMessage>
             </FormControl> */}
 
-            <FormControl variant="floating" isInvalid={errors.level} isRequired>
-              <Input
-                placeholder=" "
-                type="text"
-                id="level"
-                {...register("level", {
-                  required: "This is required",
-                  valueAsNumber: true,
-                  minLength: {
-                    value: 1,
-                    message: "Minimum length should be 1",
-                  },
-                })}
-              />
-              <FormLabel
-                htmlFor="level"
-                bgColor={useColorModeValue("bg !important", "black !important")}
+            {!teacher && (
+              <FormControl
+                variant="floating"
+                isInvalid={errors.level}
+                isRequired
               >
-                Level
-              </FormLabel>
-              <FormErrorMessage>
-                {errors.level && errors.level.message}
-              </FormErrorMessage>
-            </FormControl>
+                <Input
+                  placeholder=" "
+                  type="text"
+                  id="level"
+                  {...register("level", {
+                    required: "This is required",
+                    valueAsNumber: true,
+                    minLength: {
+                      value: 1,
+                      message: "Minimum length should be 1",
+                    },
+                  })}
+                />
+                <FormLabel
+                  htmlFor="level"
+                  bgColor={useColorModeValue(
+                    "bg !important",
+                    "black !important"
+                  )}
+                >
+                  Level
+                </FormLabel>
+                <FormErrorMessage>
+                  {errors.level && errors.level.message}
+                </FormErrorMessage>
+              </FormControl>
+            )}
 
             <FormControl variant="floating" isInvalid={errors.role} isRequired>
               <Select
                 placeholder="Select Role"
                 type="text"
                 id="role"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                }}
                 {...register("role", {
                   required: "This is required",
                 })}

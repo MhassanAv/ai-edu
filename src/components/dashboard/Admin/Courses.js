@@ -94,6 +94,15 @@ export default function Courses() {
         duration: 9000,
         isClosable: true,
       }),
+    onError: (e) => {
+      toast({
+        title: "Somthing went wrong",
+        status: "error",
+        description: e.response.data.error.msg,
+        duration: 9000,
+        isClosable: true,
+      });
+    },
     onSettled: () => queryClient.invalidateQueries(["courses", "teachers"]),
   });
 
@@ -140,7 +149,7 @@ export default function Courses() {
             <Button
               colorScheme={"red"}
               onClick={() => {
-                deleteCourse.mutate({ ...currCourse });
+                deleteCourse.mutate({ subject_id: currCourse.subject_id });
                 onCloseModify();
               }}
             >

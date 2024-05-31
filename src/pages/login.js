@@ -51,6 +51,7 @@ export default function login() {
     mutationKey: ["user"],
     onSuccess: (res) => {
       setUser(res.data);
+      console.log(res.data);
       localStorage.setItem("user", JSON.stringify(res.data));
       router.push("/dashboard");
       toast({
@@ -61,14 +62,14 @@ export default function login() {
       });
     },
     onError: (e) => {
-      setUser(null);
       toast({
         title: "Failed",
-        description: e.response.data.msg,
+        description: e.response.data.error.msg,
         status: "error",
         duration: 9000,
         isClosable: true,
       });
+      console.log(e.response);
     },
   });
 
