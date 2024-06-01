@@ -1,6 +1,5 @@
 import {
   Button,
-  Box,
   Heading,
   Flex,
   VStack,
@@ -11,33 +10,22 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
   useColorMode,
   IconButton,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
 } from "@chakra-ui/react";
 
 import { FaUserGroup } from "react-icons/fa6";
-import { CiBookmark, CiSettings, CiBookmarkMinus } from "react-icons/ci";
+import { CiSettings, CiBookmarkMinus } from "react-icons/ci";
 import { MdArrowDropDown, MdFileOpen, MdOutlinePayments } from "react-icons/md";
 import { PiSignOut } from "react-icons/pi";
 import useStore from "@/lib/store";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
-import { QueryCache, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { FaHome } from "react-icons/fa";
 import { useRouter } from "next/router";
@@ -60,6 +48,7 @@ export default function Layout({ children }) {
   const setActive = (currentPage) => {
     return currentPage === page ? useColorModeValue("#E8E8F8", "prim") : "none";
   };
+
   return (
     <Flex h="100vh" w="full" bg={useColorModeValue("#E8E8F8", "black")}>
       <VStack

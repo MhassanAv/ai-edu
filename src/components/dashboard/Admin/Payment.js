@@ -76,6 +76,15 @@ export default function Payment() {
         duration: 9000,
         isClosable: true,
       }),
+    onError: (e) => {
+      toast({
+        title: "Somthing went wrong",
+        status: "error",
+        description: e.response.data.error.msg,
+        duration: 9000,
+        isClosable: true,
+      });
+    },
     onSettled: () => queryClient.invalidateQueries(["payments"]),
   });
 
@@ -173,7 +182,12 @@ export default function Payment() {
           <Heading fontSize={"textSizeReg"}>Payment Details</Heading>
           <Box h="full" overflowY={"scroll"} w="full" position={"relative"}>
             <TableContainer w="full">
-              <Table variant="simple" colorScheme="purple">
+              <Table
+                variant="simple"
+                colorScheme="purple"
+                w="full"
+                layout="fixed"
+              >
                 <Thead>
                   <Tr>
                     <Th>Level</Th>
@@ -186,7 +200,7 @@ export default function Payment() {
                     <Tr key={payment.amount + index}>
                       <Td>{payment.level}</Td>
                       <Td>{payment.amount}</Td>
-                      <Td w="full">
+                      <Td>
                         <Button
                           onClick={() =>
                             deletePayment.mutate({ level: payment.level })

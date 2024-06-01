@@ -102,7 +102,6 @@ export default function Courses() {
         duration: 9000,
         isClosable: true,
       });
-      console.log(e);
     },
     onSettled: () => queryClient.invalidateQueries(["courses", "teachers"]),
   });
