@@ -15,6 +15,15 @@ import {
   useToast,
   Spinner,
   Center,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverAnchor,
 } from "@chakra-ui/react";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -78,14 +87,19 @@ export default function Members() {
         boxShadow={"lg"}
         p="2rem"
         bg={useColorModeValue("white", "gray.800")}
+        h="32vh"
       >
         <Heading fontSize={"textSizeReg"}>Students</Heading>
-        <Box maxH="20vh" overflowY={"scroll"} w="full">
+        <Box overflowY={"scroll"} w="full">
           <TableContainer w="full">
-            <Table variant="simple" colorScheme="purple" w="full">
+            <Table
+              variant="simple"
+              colorScheme="purple"
+              w="full"
+              layout="fixed"
+            >
               <Thead>
                 <Tr>
-                  <Th>ID</Th>
                   <Th>Name</Th>
                   <Th>Level</Th>
                   <Th>National ID</Th>
@@ -94,13 +108,14 @@ export default function Members() {
               </Thead>
               <Tbody>
                 {getStudents.isLoading ? (
-                  <Center minH="20vh" w="full">
-                    <Spinner />
-                  </Center>
+                  <Tr>
+                    <Td colSpan={4}>
+                      <Spinner />
+                    </Td>
+                  </Tr>
                 ) : (
                   getStudents.data?.data.map((student) => (
                     <Tr key={student.student_id}>
-                      <Td>{student.student_id}</Td>
                       <Td>{student.full_name}</Td>
                       <Td>{student.level}</Td>
                       <Td>{student.national_id}</Td>
@@ -141,30 +156,71 @@ export default function Members() {
         rounded={"2rem"}
         boxShadow={"lg"}
         p="2rem"
+        h="32vh"
         bg={useColorModeValue("white", "gray.800")}
       >
         <Heading fontSize={"textSizeReg"}>Instructors</Heading>
-        <Box maxH="20vh" overflowY={"scroll"} w="full">
+        <Box overflowY={"scroll"} w="full">
           <TableContainer w="full">
-            <Table variant="simple" colorScheme="purple" w="full">
+            <Table
+              variant="simple"
+              colorScheme="purple"
+              w="full"
+              layout="fixed"
+              h="full"
+            >
               <Thead>
                 <Tr>
-                  <Th>ID</Th>
                   <Th>Name</Th>
+                  <Th>Courses</Th>
                   <Th>National ID</Th>
                   <Th>Modify</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {getTeachers.isLoading ? (
-                  <Center minH="20vh" w="full">
-                    <Spinner />
-                  </Center>
+                  <Tr>
+                    <Td colSpan={4}>
+                      <Spinner />
+                    </Td>
+                  </Tr>
                 ) : (
                   getTeachers.data?.data.map((teacher) => (
                     <Tr key={teacher._id} w="full">
-                      <Td>{teacher._id}</Td>
                       <Td>{teacher.full_name}</Td>
+                      <Td>
+                        <Popover>
+                          <PopoverTrigger>
+                            <Button bg="prim" colorScheme={"purple"}>
+                              Show Courses
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent w="full" maxW="20rem">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader>Courses</PopoverHeader>
+                            <PopoverBody
+                              flexDir="column"
+                              display={"flex"}
+                              gap="1rem"
+                              w="full"
+                              maxW="20rem"
+                              p="1.5rem"
+                            >
+                              {teacher.subjects.length !== 0
+                                ? teacher.subjects.map((subject) => (
+                                    <Heading
+                                      fontSize={"sm"}
+                                      key={subject.subject_id}
+                                    >
+                                      {subject.subject_name}
+                                    </Heading>
+                                  ))
+                                : "No subjects assigned yet"}
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      </Td>
                       <Td>{teacher.national_id}</Td>
                       <Td>
                         <Button

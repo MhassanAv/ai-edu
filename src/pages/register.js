@@ -16,6 +16,7 @@ import {
   useColorModeValue,
   Select,
   chakra,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -36,15 +37,15 @@ export default function register() {
   const router = useRouter();
   const { user, setUser } = useStore();
   const [role, setRole] = useState("");
-
+  const toast = useToast();
   const { colorMode, toggleColorMode } = useColorMode();
+
   const mutation = useMutation({
     mutationFn: async (bodyData) =>
       await axios.post("http://localhost:3000/api/v1/auth/register", bodyData),
     mutationKey: ["user"],
     onSuccess: (res) => {
       setUser(res.data);
-      console.log(res.data);
       localStorage.setItem("user", JSON.stringify(res.data));
       router.push("/dashboard");
       toast({
@@ -209,22 +210,22 @@ export default function register() {
             <FormControl
               variant="floating"
               isInvalid={errors.level}
-              isRequired
+              isRequired={role !== "student" ? false : true}
               isDisabled={role === "student" ? false : true}
             >
-              <Input
-                placeholder=" "
-                type="text"
+              <Select
+                placeholder="Select Level"
+                type="number"
                 id="level"
                 {...register("level", {
-                  required: "This is required",
                   valueAsNumber: true,
-                  minLength: {
-                    value: 1,
-                    message: "Minimum length should be 1",
-                  },
                 })}
-              />
+              >
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+                <option value={3}>3</option>
+                <option value={4}>4</option>
+              </Select>
               <FormLabel
                 htmlFor="level"
                 bgColor={useColorModeValue("bg !important", "black !important")}

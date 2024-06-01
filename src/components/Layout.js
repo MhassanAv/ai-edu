@@ -31,13 +31,14 @@ import {
 } from "@chakra-ui/react";
 
 import { FaUserGroup } from "react-icons/fa6";
-import { CiBookmark, CiSettings } from "react-icons/ci";
-import { MdArrowDropDown, MdFileOpen, MdPayment } from "react-icons/md";
+import { CiBookmark, CiSettings, CiBookmarkMinus } from "react-icons/ci";
+import { MdArrowDropDown, MdFileOpen, MdOutlinePayments } from "react-icons/md";
 import { PiSignOut } from "react-icons/pi";
 import useStore from "@/lib/store";
 import { useEffect, useRef, useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { QueryCache, useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { FaHome } from "react-icons/fa";
 import { useRouter } from "next/router";
 
@@ -57,20 +58,21 @@ export default function Layout({ children }) {
   });
   const pageRef = useRef(null);
   const setActive = (currentPage) => {
-    return currentPage === page ? "prim" : "none";
+    return currentPage === page ? useColorModeValue("#E8E8F8", "prim") : "none";
   };
   return (
-    <Flex h="100vh" w="full" gap="2rem">
+    <Flex h="100vh" w="full" bg={useColorModeValue("#E8E8F8", "black")}>
       <VStack
-        flex="1"
         align={"center"}
         justifyContent={"space-between"}
         py="3rem"
         w="full"
+        maxW="20%"
         boxShadow={"lg"}
         h="full"
         bg={useColorModeValue("white", "gray.800")}
         display={["none", "none", "none", "flex"]}
+        roundedRight={"2rem"}
       >
         <VStack spacing={"7rem"} w="full">
           <Center maxW="7rem">
@@ -81,13 +83,20 @@ export default function Layout({ children }) {
             sx={{
               button: {
                 w: "full",
+                color: useColorModeValue("blackAlpha.700", "white"),
                 px: "3rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "start",
+                transition: "all 0.3s ease",
+                borderLeft: "inset 5px none",
                 rounded: "0",
                 _hover: {
-                  bg: "prim",
+                  bg: useColorModeValue("#E8E8F8", "prim"),
+                  borderLeft: `inset 5px ${useColorModeValue(
+                    "var(--chakra-colors-prim)",
+                    "#E8E8F8"
+                  )}`,
                 },
               },
             }}
@@ -117,7 +126,7 @@ export default function Layout({ children }) {
             ) : null}
             <Button
               onClick={() => setPage("Courses")}
-              leftIcon={<CiBookmark size="25px" />}
+              leftIcon={<CiBookmarkMinus size="25px" />}
               data-link="Courses"
               bg={setActive("Courses")}
             >
@@ -126,7 +135,7 @@ export default function Layout({ children }) {
             {user.role === "student" || user.role === "admin" ? (
               <Button
                 onClick={() => setPage("Payment")}
-                leftIcon={<MdPayment size="25px" />}
+                leftIcon={<MdOutlinePayments size="25px" />}
                 bg={setActive("Payment")}
               >
                 Payment Details
@@ -161,23 +170,23 @@ export default function Layout({ children }) {
         </Button>
       </VStack>
       <VStack
-        flex="3.5"
         gap="2rem"
         align={"center"}
         w="full"
-        justify={"center"}
         spacing={"0rem"}
-        px="4rem"
+        justifyContent={"start"}
+        p="2rem"
+        h="100vh"
       >
         <Flex
           flexWrap={["wrap", "wrap", "nowrap"]}
           w="full"
           alignItems={"center"}
-          justifyContent={"space-between"}
+          justifyContent={"center"}
+          gap="2rem"
         >
           <Center
             w="full"
-            maxW="40rem"
             h="10.5rem"
             bgPos={"center"}
             bgRepeat={"no-repeat"}

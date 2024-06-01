@@ -102,6 +102,7 @@ export default function Courses() {
         duration: 9000,
         isClosable: true,
       });
+      console.log(e);
     },
     onSettled: () => queryClient.invalidateQueries(["courses", "teachers"]),
   });
@@ -110,6 +111,7 @@ export default function Courses() {
 
   const ModifyModal = () => {
     const [currTeacher, setCurrTeacher] = useState("");
+    console.log(currTeacher);
     return (
       <Modal isOpen={isOpenModify} onClose={onCloseModify}>
         <ModalOverlay />
@@ -140,7 +142,11 @@ export default function Courses() {
               colorScheme="purple"
               mr={3}
               onClick={() => {
-                modifyCourse.mutate({ ...currCourse, teacher_id: currTeacher });
+                modifyCourse.mutate({
+                  subject_name: currCourse.subject_name,
+                  level: currCourse.level,
+                  teacher_id: currTeacher === "None" ? null : currTeacher,
+                });
                 onCloseModify();
               }}
             >
@@ -151,6 +157,7 @@ export default function Courses() {
               onClick={() => {
                 deleteCourse.mutate({ subject_id: currCourse.subject_id });
                 onCloseModify();
+                console.log(currCourse.subject_id);
               }}
             >
               Delete Course
@@ -213,14 +220,16 @@ export default function Courses() {
                   required: "This is required",
                 })}
               >
-                <option value={null}> None</option>
+                <option value={"None"}>None</option>
                 {getTeachers.isLoading ? (
                   <Center minH="20vh" w="full">
                     <Spinner />
                   </Center>
                 ) : (
                   getTeachers.data?.data.map((teacher) => (
-                    <option value={teacher._id}>{teacher.full_name}</option>
+                    <option key={teacher._id} value={teacher._id}>
+                      {teacher.full_name}
+                    </option>
                   ))
                 )}
               </Select>
@@ -270,30 +279,37 @@ export default function Courses() {
         boxShadow={"lg"}
         p="2rem"
         bg={useColorModeValue("white", "gray.800")}
+        h="50vh"
       >
         <Heading fontSize={"textSizeReg"}>Courses</Heading>
-        <Box maxH="50vh" h="auto" overflowY={"scroll"} w="full">
+        <Box h="full" overflowY={"scroll"} w="full">
           <TableContainer w="full">
-            <Table variant="simple" colorScheme="purple">
+            <Table variant="simple" colorScheme="purple" w="full">
               <Thead>
                 <Tr>
                   <Th>Course</Th>
                   <Th>Level</Th>
                   <Th>Instractor</Th>
-                  <Th> </Th>
+                  <Th>Modify</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {getCourses.isLoading ? (
-                  <Center minH="20vh" w="full">
-                    <Spinner />
-                  </Center>
+                  <Tr>
+                    <Td colSpan={4}>
+                      <Spinner />
+                    </Td>
+                  </Tr>
                 ) : (
                   getCourses.data?.data.map((course) => (
                     <Tr key={course.subject_id}>
-                      <Th>{course.subject_name}</Th>
+                      <Th w="max-content">{course.subject_name}</Th>
                       <Th>{course.level}</Th>
-                      <Th>{course.teacher_name}</Th>
+                      <Th>
+                        {course.teacher_name == ""
+                          ? "None"
+                          : course.teacher_name}
+                      </Th>
                       <Th>
                         <Button
                           onClick={() => {

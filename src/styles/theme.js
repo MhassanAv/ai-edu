@@ -72,13 +72,20 @@ const stylesTheme = {
         margin: "0",
         scrollBehavior: "smooth",
         fontFamily: "var(--font-open-sans)",
-        fontWeight:'400'
+        fontWeight: "400",
       },
-        input:{
-        '_autofill':{
-          'WebkitBoxShadow': props.colorMode !== 'dark'?"0 0 0 30px var(--chakra-colors-bg) inset !important":"0 0 0 30px black inset !important",
-'WebkitTextFillColor': props.colorMode !== 'dark'?"black !important":"white !important"}
+      input: {
+        _autofill: {
+          WebkitBoxShadow:
+            props.colorMode !== "dark"
+              ? "0 0 0 30px var(--chakra-colors-bg) inset !important"
+              : "0 0 0 30px black inset !important",
+          WebkitTextFillColor:
+            props.colorMode !== "dark"
+              ? "black !important"
+              : "white !important",
         },
+      },
       "h1,h2,h3,h4,h5,h6": {
         fontFamily: "var(--font-poppins)",
       },

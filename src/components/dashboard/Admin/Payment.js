@@ -171,7 +171,7 @@ export default function Payment() {
           bg={useColorModeValue("white", "gray.800")}
         >
           <Heading fontSize={"textSizeReg"}>Payment Details</Heading>
-          <Box maxH="20vh" overflowY={"scroll"} w="full">
+          <Box h="full" overflowY={"scroll"} w="full" position={"relative"}>
             <TableContainer w="full">
               <Table variant="simple" colorScheme="purple">
                 <Thead>
@@ -201,7 +201,9 @@ export default function Payment() {
               </Table>
             </TableContainer>
           </Box>
-          <Button onClick={onOpenAdd}>Add Payment</Button>
+          <Button onClick={onOpenAdd} h="4rem">
+            Add Payment
+          </Button>
         </VStack>
         <VStack
           w="full"
