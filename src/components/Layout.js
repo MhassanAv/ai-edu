@@ -211,11 +211,22 @@ export default function Layout({ children }) {
                   name={user?.full_name}
                   src="https://bit.ly/sage-adebayo"
                 />
-                <VStack>
+                <VStack align={"start"}>
                   <Heading fontSize={"1.3rem"}>{user?.full_name}</Heading>
-                  <Heading fontSize={"1rem"} color="prim" fontWeight={"300"}>
-                    {user?.role}
-                  </Heading>
+                  <HStack>
+                    <Heading fontSize={"1rem"} color="prim" fontWeight={"300"}>
+                      {user?.role}
+                    </Heading>
+                    {user?.role !== "admin" && (
+                      <Heading
+                        fontSize={"1rem"}
+                        color={user?.isActive ? "green" : "red"}
+                        fontWeight={"300"}
+                      >
+                        {user?.isActive ? "(active)" : "(disabled)"}
+                      </Heading>
+                    )}
+                  </HStack>
                 </VStack>
               </HStack>
             </MenuButton>

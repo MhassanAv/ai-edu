@@ -133,6 +133,7 @@ export default function Members() {
                           student.isActive ? "active" : "disabled"
                         }`}</Button>
                         <Button
+                          colorScheme={"red"}
                           onClick={() =>
                             deleteUser.mutate({
                               user: student.student_id,
@@ -236,6 +237,7 @@ export default function Members() {
                           teacher.isActive ? "active" : "disabled"
                         }`}</Button>
                         <Button
+                          colorScheme={"red"}
                           onClick={() =>
                             deleteUser.mutate({
                               user: teacher._id,

@@ -25,34 +25,48 @@ import {
   FormLabel,
   useToast,
   FormErrorMessage,
+  Select,
 } from "@chakra-ui/react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { FaTrash } from "react-icons/fa";
 
 export default function Payment() {
   const toast = useToast();
+  const queryClient = useQueryClient();
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
   } = useForm();
   const {
-    isOpen: isOpenAdd,
-    onOpen: onOpenAdd,
-    onClose: onCloseAdd,
+    isOpen: isOpenPay,
+    onOpen: onOpenPay,
+    onClose: onClosePay,
   } = useDisclosure();
+
+  const {
+    isOpen: isOpenMethods,
+    onOpen: onOpenMethods,
+    onClose: onCloseMethods,
+  } = useDisclosure();
+  const getStudents = useQuery({
+    queryKey: ["students"],
+    queryFn: async () =>
+      await axios.get("http://localhost:3000/api/v1/admin/students"),
+  });
   const getPayments = useQuery({
     queryKey: ["payments"],
     queryFn: async () =>
-      await axios.get("http://localhost:3000/api/v1/admin/payment"),
+      await axios.get("http://localhost:3000/api/v1/admin/pay/level"),
   });
 
   const deletePayment = useMutation({
     mutationKey: ["payments"],
     mutationFn: async (bodyData) =>
-      await axios.delete("http://localhost:3000/api/v1/admin/payment", {
+      await axios.delete("http://localhost:3000/api/v1/admin/pay/level", {
         data: bodyData,
       }),
     onSuccess: () =>
@@ -68,7 +82,10 @@ export default function Payment() {
   const addPayment = useMutation({
     mutationKey: ["payments"],
     mutationFn: async (bodyData) =>
-      await axios.post("http://localhost:3000/api/v1/admin/payment", bodyData),
+      await axios.post(
+        "http://localhost:3000/api/v1/admin/pay/level",
+        bodyData
+      ),
     onSuccess: () =>
       toast({
         title: "Payment Added",
@@ -88,13 +105,150 @@ export default function Payment() {
     onSettled: () => queryClient.invalidateQueries(["payments"]),
   });
 
-  const AddModal = () => {
+  const getMethods = useQuery({
+    queryKey: ["methods"],
+    queryFn: async () =>
+      await axios.get("http://localhost:3000/api/v1/admin/pay/method"),
+  });
+
+  const deleteMethod = useMutation({
+    mutationKey: ["methods"],
+    mutationFn: async (bodyData) =>
+      await axios.delete("http://localhost:3000/api/v1/admin/pay/method", {
+        data: bodyData,
+      }),
+    onSuccess: () =>
+      toast({
+        title: "Payment Deleted",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }),
+    onSettled: () => queryClient.invalidateQueries(["methods"]),
+  });
+
+  const addMethod = useMutation({
+    mutationKey: ["methods"],
+    mutationFn: async (bodyData) =>
+      await axios.post(
+        "http://localhost:3000/api/v1/admin/pay/method",
+        bodyData
+      ),
+    onSuccess: () =>
+      toast({
+        title: "Method Added",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }),
+    onError: (e) => {
+      toast({
+        title: "Somthing went wrong",
+        status: "error",
+        description: e.response.data.error.msg,
+        duration: 9000,
+        isClosable: true,
+      });
+    },
+    onSettled: () => queryClient.invalidateQueries(["methods"]),
+  });
+
+  const getHistory = useQuery({
+    queryKey: ["history"],
+    queryFn: async () =>
+      await axios.get("http://localhost:3000/api/v1/admin/pay/history"),
+  });
+
+  const submitPayment = useMutation({
+    mutationKey: ["history"],
+    mutationFn: async (bodyData) =>
+      await axios.post(
+        "http://localhost:3000/api/v1/admin/pay/history",
+        bodyData
+      ),
+    onSuccess: () =>
+      toast({
+        title: "Payment Submitted",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }),
+    onError: (e) => {
+      toast({
+        title: "Somthing went wrong",
+        status: "error",
+        description: e.response.data.error.msg,
+        duration: 9000,
+        isClosable: true,
+      });
+    },
+    onSettled: () => queryClient.invalidateQueries(["methods"]),
+  });
+
+  const MethodModal = () => {
     function onSubmit(values) {
-      addPayment.mutate(values);
-      onCloseAdd();
+      addMethod.mutate(values);
+      onCloseMethods();
     }
     return (
-      <Modal isOpen={isOpenAdd} onClose={onCloseAdd}>
+      <Modal isOpen={isOpenMethods} onClose={onCloseMethods}>
+        <ModalOverlay />
+        <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
+          <ModalHeader>Add Method</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl isInvalid={errors.account} isRequired>
+              <FormLabel htmlFor="account">Account</FormLabel>
+              <Input
+                placeholder="Account"
+                type="text"
+                {...register("account", {
+                  required: "This is required",
+                })}
+              />
+
+              <FormErrorMessage>
+                {errors.account && errors.account.message}
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={errors.name} isRequired>
+              <FormLabel htmlFor="name">Type</FormLabel>
+              <Select
+                placeholder="Account Type"
+                type="text"
+                {...register("name", {
+                  required: "This is required",
+                })}
+              >
+                <option value={"vodafone cash"}>Vodafone Cash</option>
+                <option value={"instapay"}>Instapay</option>
+              </Select>
+
+              <FormErrorMessage>
+                {errors.name && errors.name.message}
+              </FormErrorMessage>
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="purple" type="submit" mr={3}>
+              Add
+            </Button>
+            <Button onClick={onCloseMethods}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
+  const PayModal = () => {
+    function onSubmit(values) {
+      addPayment.mutate(values);
+      onClosePay();
+    }
+    return (
+      <Modal isOpen={isOpenPay} onClose={onClosePay}>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader>Add Payment</ModalHeader>
@@ -131,35 +285,13 @@ export default function Payment() {
                 {errors.amount && errors.amount.message}
               </FormErrorMessage>
             </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Vodafone Cash</FormLabel>
-              <Input
-                placeholder="Vodafone Cash"
-                type="text"
-                {...register("vodafoneCash", {
-                  required: "This is required",
-                })}
-              />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>InstaPay</FormLabel>
-              <Input
-                placeholder="InstaPay"
-                type="text"
-                {...register("instaPay", {
-                  required: "This is required",
-                })}
-              />
-            </FormControl>
           </ModalBody>
 
           <ModalFooter>
             <Button colorScheme="purple" type="submit" mr={3}>
               Add
             </Button>
-            <Button onClick={onCloseAdd}>Cancel</Button>
+            <Button onClick={onClosePay}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -168,7 +300,8 @@ export default function Payment() {
 
   return (
     <>
-      <AddModal />
+      <PayModal />
+      <MethodModal />
       <HStack w="full" maxH="30vh" spacing={"2rem"}>
         <VStack
           w="full"
@@ -179,7 +312,7 @@ export default function Payment() {
           h="full"
           bg={useColorModeValue("white", "gray.800")}
         >
-          <Heading fontSize={"textSizeReg"}>Payment Details</Heading>
+          <Heading fontSize={"textSizeReg"}>Levels Details</Heading>
           <Box h="full" overflowY={"scroll"} w="full" position={"relative"}>
             <TableContainer w="full">
               <Table
@@ -196,27 +329,34 @@ export default function Payment() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {getPayments.data?.data.map((payment, index) => (
-                    <Tr key={payment.amount + index}>
-                      <Td>{payment.level}</Td>
-                      <Td>{payment.amount}</Td>
-                      <Td>
-                        <Button
-                          onClick={() =>
-                            deletePayment.mutate({ level: payment.level })
-                          }
-                        >
-                          Delete
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))}
+                  {getPayments.data?.data
+                    .sort((a, b) => a.level - b.level)
+                    .map((payment, index) => (
+                      <Tr key={payment.amount + index}>
+                        <Td>{payment.level}</Td>
+                        <Td>{payment.amount}</Td>
+                        <Td>
+                          <Button
+                            colorScheme={"red"}
+                            onClick={() =>
+                              deletePayment.mutate({ level: payment.level })
+                            }
+                          >
+                            <FaTrash />
+                          </Button>
+                        </Td>
+                      </Tr>
+                    ))}
                 </Tbody>
               </Table>
             </TableContainer>
           </Box>
-          <Button onClick={onOpenAdd} h="4rem">
-            Add Payment
+          <Button
+            onClick={onOpenPay}
+            isLoading={addPayment.isPending || deletePayment.isPending}
+            h="4rem"
+          >
+            Add | Edit
           </Button>
         </VStack>
         <VStack
@@ -240,20 +380,33 @@ export default function Payment() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  <Tr>
-                    <Td>Vodafone Cash</Td>
-                    <Td>+20100000000</Td>
-                    <Td>Delete</Td>
-                  </Tr>
-                  <Tr>
-                    <Td>Vodafone Cash</Td>
-                    <Td>+20100000000</Td>
-                    <Td>Delete</Td>
-                  </Tr>
+                  {getMethods.data?.data.map((method, index) => (
+                    <Tr key={method.account + index}>
+                      <Td>{method.name}</Td>
+                      <Td>{method.account}</Td>
+                      <Td>
+                        <Button
+                          colorScheme={"red"}
+                          onClick={() =>
+                            deleteMethod.mutate({ name: method.name })
+                          }
+                        >
+                          <FaTrash />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))}
                 </Tbody>
               </Table>
             </TableContainer>
           </Box>
+          <Button
+            onClick={onOpenMethods}
+            isLoading={addMethod.isPending || deleteMethod.isPending}
+            h="4rem"
+          >
+            Add | Edit
+          </Button>
         </VStack>
       </HStack>
       <VStack
@@ -280,24 +433,26 @@ export default function Payment() {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Mohamed</Td>
-                  <Td>30001234123412</Td>
-                  <Td>E-Wallet Number</Td>
-                  <Td>Vodafone Cash</Td>
-                  <Td>DD/MM/YY</Td>
-                  <Td color="red">Submit</Td>
-                </Tr>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Mohamed</Td>
-                  <Td>30001234123412</Td>
-                  <Td>E-Wallet Number</Td>
-                  <Td>Vodafone Cash</Td>
-                  <Td>DD/MM/YY</Td>
-                  <Td color="red">Submit</Td>
-                </Tr>
+                {getHistory.data?.data.map((history) => (
+                  <Tr key={history.user_id}>
+                    <Td>{history.level}</Td>
+                    <Td>{history.name}</Td>
+                    <Td>{history.national_id}</Td>
+                    <Td>{history.paid_from}</Td>
+                    <Td>{history.method}</Td>
+                    <Td>{new Date(history.date).toDateString()}</Td>
+                    <Td>
+                      <Button
+                        colorScheme={"green"}
+                        onClick={() =>
+                          submitPayment.mutate({ user_id: history.user_id })
+                        }
+                      >
+                        Submit
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </TableContainer>

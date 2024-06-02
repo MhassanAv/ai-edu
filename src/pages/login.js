@@ -29,6 +29,7 @@ import Head from "next/head";
 export default function login() {
   const [isHidden, setIsHidden] = useState(true);
   const { user, setUser } = useStore();
+  const [userFounded, setUserFounded] = useState(false);
   const toast = useToast();
   const router = useRouter();
 
@@ -41,8 +42,10 @@ export default function login() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
+      setUserFounded(true);
       router.push("/dashboard");
     }
+    return () => setUserFounded(false);
   }, [user]);
 
   const { colorMode, toggleColorMode } = useColorMode();
@@ -85,140 +88,153 @@ export default function login() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Center w="full" h="100vh" as="main">
-        <Center
-          h="10vh"
-          w="full"
-          bg="white"
-          position={"absolute"}
-          top="0"
-          boxShadow={"lg"}
-          bgColor={useColorModeValue("white", "gray.800")}
-        >
-          <Image
-            filter={useColorModeValue("none", "invert(1)")}
-            src={"../logo.svg"}
-            maxW="60px"
-            boxSize={"60px"}
-            alt="AI-EDU"
-          />
-          <IconButton
-            onClick={toggleColorMode}
-            position={"absolute"}
-            right="3rem"
-          >
-            {colorMode === "dark" ? <MdDarkMode /> : <MdLightMode />}
-          </IconButton>
-        </Center>
-        <VStack
-          align={"center"}
-          justifyContent={"center"}
-          gap="2.5rem"
-          as="form"
-          px="1.5rem"
-          py="2rem"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <VStack>
-            <Heading>Welcome Back!</Heading>
-            <Text textAlign={"center"}>
-              Enter your Credentials to access your account
-            </Text>
-          </VStack>
-          <FormControl
-            variant="floating"
-            isInvalid={errors.username}
-            isRequired
-          >
-            <Input
-              placeholder=" "
-              type="text"
-              {...register("username", {
-                required: "This is required",
-                minLength: { value: 4, message: "Minimum length should be 4" },
-              })}
-            />
-            <FormLabel
-              htmlFor="username"
-              bgColor={useColorModeValue("bg !important", "black !important")}
-            >
-              National ID
-            </FormLabel>
-            <FormErrorMessage>
-              {errors.username && errors.username.message}
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl
-            variant="floating"
-            pos="relative"
-            isInvalid={errors.password}
-            isRequired
-          >
-            <Button
-              color="textLight"
-              variant={"unstyled"}
-              bg="none"
-              rightIcon={isHidden ? <FaEye /> : <FaEyeSlash />}
-              onClick={() => setIsHidden((prev) => !prev)}
-              position={"absolute"}
-              right="0"
-              top="-2rem"
-              display="flex"
-              align="center"
-              justifyContent={"center"}
-              opacity={"0.7"}
-              pb="0.5rem"
-              fontSize={"xs"}
-            >
-              {isHidden ? "Show" : "Hide"}
-            </Button>
-            <Input
-              placeholder=" "
-              type={isHidden ? "password" : "text"}
-              {...register("password", {
-                required: "This is required",
-                minLength: { value: 4, message: "Minimum length should be 4" },
-              })}
-            />
-            <FormLabel
-              bgColor={useColorModeValue("bg !important", "black !important")}
-              htmlFor="password"
-            >
-              Password
-            </FormLabel>
-            <FormErrorMessage>
-              {errors.password && errors.password.message}
-            </FormErrorMessage>
-          </FormControl>
-          <Button
-            isLoading={mutation.isLoading}
-            type="submit"
-            py="1rem"
-            w="full"
-            bg="prim"
-            color="white"
-            rounded="full"
-          >
-            Log in
-          </Button>
-          <Divider borderColor="textLight" w="full" />
-          <Heading fontSize={"xl"}>Don’t have an account?</Heading>
-          <Button
-            as={NextLink}
-            href={"/register"}
-            py="1rem"
-            w="full"
-            bg="none"
-            border={"1.5px solid"}
-            borderColor={useColorModeValue("black", "white")}
-            color={useColorModeValue("black", "white")}
-            rounded="full"
-          >
-            Sign up
-          </Button>
+      {userFounded ? (
+        <VStack w="full" h="100vh" as="main" justifyContent={"center"}>
+          <Heading>Logging In</Heading>
+          <Spinner />
         </VStack>
-      </Center>
+      ) : (
+        <Center w="full" h="100vh" as="main">
+          <Center
+            h="10vh"
+            w="full"
+            bg="white"
+            position={"absolute"}
+            top="0"
+            boxShadow={"lg"}
+            bgColor={useColorModeValue("white", "gray.800")}
+          >
+            <Image
+              filter={useColorModeValue("none", "invert(1)")}
+              src={"../logo.svg"}
+              maxW="60px"
+              boxSize={"60px"}
+              alt="AI-EDU"
+            />
+            <IconButton
+              onClick={toggleColorMode}
+              position={"absolute"}
+              right="3rem"
+            >
+              {colorMode === "dark" ? <MdDarkMode /> : <MdLightMode />}
+            </IconButton>
+          </Center>
+          <VStack
+            align={"center"}
+            justifyContent={"center"}
+            gap="2.5rem"
+            as="form"
+            px="1.5rem"
+            py="2rem"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <VStack>
+              <Heading>Welcome Back!</Heading>
+              <Text textAlign={"center"}>
+                Enter your Credentials to access your account
+              </Text>
+            </VStack>
+            <FormControl
+              variant="floating"
+              isInvalid={errors.username}
+              isRequired
+            >
+              <Input
+                placeholder=" "
+                type="text"
+                {...register("username", {
+                  required: "This is required",
+                  minLength: {
+                    value: 4,
+                    message: "Minimum length should be 4",
+                  },
+                })}
+              />
+              <FormLabel
+                htmlFor="username"
+                bgColor={useColorModeValue("bg !important", "black !important")}
+              >
+                National ID
+              </FormLabel>
+              <FormErrorMessage>
+                {errors.username && errors.username.message}
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl
+              variant="floating"
+              pos="relative"
+              isInvalid={errors.password}
+              isRequired
+            >
+              <Button
+                color="textLight"
+                variant={"unstyled"}
+                bg="none"
+                rightIcon={isHidden ? <FaEye /> : <FaEyeSlash />}
+                onClick={() => setIsHidden((prev) => !prev)}
+                position={"absolute"}
+                right="0"
+                top="-2rem"
+                display="flex"
+                align="center"
+                justifyContent={"center"}
+                opacity={"0.7"}
+                pb="0.5rem"
+                fontSize={"xs"}
+              >
+                {isHidden ? "Show" : "Hide"}
+              </Button>
+              <Input
+                placeholder=" "
+                type={isHidden ? "password" : "text"}
+                {...register("password", {
+                  required: "This is required",
+                  minLength: {
+                    value: 4,
+                    message: "Minimum length should be 4",
+                  },
+                })}
+              />
+              <FormLabel
+                bgColor={useColorModeValue("bg !important", "black !important")}
+                htmlFor="password"
+              >
+                Password
+              </FormLabel>
+              <FormErrorMessage>
+                {errors.password && errors.password.message}
+              </FormErrorMessage>
+            </FormControl>
+            <Button
+              isLoading={mutation.isLoading}
+              type="submit"
+              py="1rem"
+              w="full"
+              bg="prim"
+              color="white"
+              rounded="full"
+            >
+              Log in
+            </Button>
+            <Divider borderColor="textLight" w="full" />
+            <Heading fontSize={"xl"}>Don’t have an account?</Heading>
+            <Button
+              as={NextLink}
+              href={"/register"}
+              py="1rem"
+              w="full"
+              bg="none"
+              border={"1.5px solid"}
+              borderColor={useColorModeValue("black", "white")}
+              color={useColorModeValue("black", "white")}
+              rounded="full"
+            >
+              Sign up
+            </Button>
+          </VStack>
+        </Center>
+      )}
     </>
   );
 }
