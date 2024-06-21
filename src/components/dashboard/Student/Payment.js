@@ -42,7 +42,7 @@ export default function Payment() {
   return (
     <>
       <HStack w="full" spacing={"2rem"}>
-        <VStack w="full" spacing={"2rem"}>
+        <VStack w="full" spacing={"2rem"} h="full">
           <VStack
             w="full"
             align={"start"}
@@ -93,6 +93,9 @@ export default function Payment() {
           as="form"
           onSubmit={handleSubmit(onSubmit)}
           w={"full"}
+          bg={useColorModeValue("white", "gray.800")}
+          p="2rem"
+          rounded="2rem"
         >
           <VStack align={"start"} w="full">
             <Heading>Payment Form</Heading>

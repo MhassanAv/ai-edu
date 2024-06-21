@@ -36,6 +36,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Courses() {
+  const queryClient = useQueryClient();
+
   const {
     handleSubmit,
     register,
@@ -58,8 +60,6 @@ export default function Courses() {
     queryFn: async () =>
       await axios.get("http://localhost:3000/api/v1/admin/teachers"),
   });
-
-  const queryClient = useQueryClient();
 
   const getCourses = useQuery({
     queryKey: ["courses"],

@@ -101,20 +101,23 @@ export default function Exams() {
                   <Th>Code</Th>
                   <Th>Course</Th>
                   <Th>Level</Th>
-                  <Th>Instractor</Th>
-                  <Th> </Th>
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Physics</Td>
-                  <Td>1</Td>
-                  <Td>Name</Td>
-                  <Td>
-                    <Button onClick={onOpen}>Edit</Button>
-                  </Td>
-                </Tr>
+                {getCourses.isLoading ? (
+                  <Tr>
+                    <Td colSpan={4}>
+                      <Spinner />
+                    </Td>
+                  </Tr>
+                ) : (
+                  getCourses.data?.data.map((course) => (
+                    <Tr key={course.subject_id}>
+                      <Th w="max-content">{course.subject_name}</Th>
+                      <Th>{course.level}</Th>
+                    </Tr>
+                  ))
+                )}
               </Tbody>
             </Table>
           </TableContainer>
