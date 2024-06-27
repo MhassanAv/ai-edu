@@ -36,27 +36,14 @@ import { FaTrash } from "react-icons/fa";
 export default function Payment() {
   const toast = useToast();
   const queryClient = useQueryClient();
+  const [modalType, setModalType] = useState("");
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
   } = useForm();
-  const {
-    isOpen: isOpenPay,
-    onOpen: onOpenPay,
-    onClose: onClosePay,
-  } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const {
-    isOpen: isOpenMethods,
-    onOpen: onOpenMethods,
-    onClose: onCloseMethods,
-  } = useDisclosure();
-  const getStudents = useQuery({
-    queryKey: ["students"],
-    queryFn: async () =>
-      await axios.get("http://localhost:3000/api/v1/admin/students"),
-  });
   const getPayments = useQuery({
     queryKey: ["payments"],
     queryFn: async () =>
@@ -185,15 +172,19 @@ export default function Payment() {
     onSettled: () => queryClient.invalidateQueries(["methods"]),
   });
 
-  const MethodModal = () => {
-    function onSubmit(values) {
-      addMethod.mutate(values);
-      onCloseMethods();
+  const PaymentModal = ({ type }) => {
+    function handlePayment(values) {
+      addPayment.mutate(values);
+      onClose();
     }
-    return (
-      <Modal isOpen={isOpenMethods} onClose={onCloseMethods}>
+    function handleMethod(values) {
+      addMethod.mutate(values);
+      onClose();
+    }
+    return type == "method" ? (
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
+        <ModalContent as="form" onSubmit={handleSubmit(handleMethod)}>
           <ModalHeader>Add Method</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
@@ -235,22 +226,14 @@ export default function Payment() {
             <Button colorScheme="purple" type="submit" mr={3}>
               Add
             </Button>
-            <Button onClick={onCloseMethods}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-    );
-  };
-
-  const PayModal = () => {
-    function onSubmit(values) {
-      addPayment.mutate(values);
-      onClosePay();
-    }
-    return (
-      <Modal isOpen={isOpenPay} onClose={onClosePay}>
+    ) : (
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
+        <ModalContent as="form" onSubmit={handleSubmit(handlePayment)}>
           <ModalHeader>Add Payment</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
@@ -291,7 +274,7 @@ export default function Payment() {
             <Button colorScheme="purple" type="submit" mr={3}>
               Add
             </Button>
-            <Button onClick={onClosePay}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -300,8 +283,6 @@ export default function Payment() {
 
   return (
     <>
-      <PayModal />
-      <MethodModal />
       <HStack w="full" maxH="30vh" spacing={"2rem"}>
         <VStack
           w="full"
@@ -352,7 +333,9 @@ export default function Payment() {
             </TableContainer>
           </Box>
           <Button
-            onClick={onOpenPay}
+            onClick={() => {
+              setModalType("pay"), onOpen();
+            }}
             isLoading={addPayment.isPending || deletePayment.isPending}
             h="4rem"
           >
@@ -401,7 +384,9 @@ export default function Payment() {
             </TableContainer>
           </Box>
           <Button
-            onClick={onOpenMethods}
+            onClick={() => {
+              setModalType("method"), onOpen();
+            }}
             isLoading={addMethod.isPending || deleteMethod.isPending}
             h="4rem"
           >
@@ -458,6 +443,7 @@ export default function Payment() {
           </TableContainer>
         </Box>
       </VStack>
+      <PaymentModal type={modalType} />
     </>
   );
 }
