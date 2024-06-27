@@ -23,11 +23,9 @@ export default function Home() {
   const getCourses = useQuery({
     queryKey: ["teacherCourses"],
     queryFn: async () =>
-      await axios.get("http://localhost:3000/api/v1/teacher/courses", {
-        data: {
-          user_id: user.user_id,
-        },
-      }),
+      await axios.get(
+        `http://localhost:3000/api/v1/teacher/Courses?user_id=${user.user_id}`
+      ),
   });
 
   return (
@@ -44,7 +42,7 @@ export default function Home() {
         <Heading fontSize={"textSizeReg"}>Courses</Heading>
         <Box maxH="20vh" overflowY={"scroll"} w="full" h="full">
           <TableContainer w="full">
-            <Table variant="simple" colorScheme="purple">
+            <Table variant="simple" colorScheme="purple" layout="fixed">
               <Thead>
                 <Tr>
                   <Th>Name</Th>

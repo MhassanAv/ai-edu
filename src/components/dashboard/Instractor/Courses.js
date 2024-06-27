@@ -28,15 +28,28 @@ import {
   Select,
   Spinner,
   FormErrorMessage,
+  HStack,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverAnchor,
 } from "@chakra-ui/react";
 import { HiOutlineDocumentAdd } from "react-icons/hi";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
+import useStore from "@/lib/store";
+import { FaTrash } from "react-icons/fa";
 
 export default function Courses() {
   const queryClient = useQueryClient();
+  const { user } = useStore();
 
   const {
     handleSubmit,
@@ -49,6 +62,40 @@ export default function Courses() {
     onOpen: onOpenAdd,
     onClose: onCloseAdd,
   } = useDisclosure();
+
+  const getCourses = useQuery({
+    queryKey: ["courses"],
+    queryFn: async () =>
+      await axios.get("http://localhost:3000/api/v1/teacher/courses", {
+        params: { user_id: user.user_id },
+      }),
+  });
+
+  const deleteContent = useMutation({
+    mutationKey: ["courses"],
+    mutationFn: async (bodyData) =>
+      await axios.delete("http://localhost:3000/api/v1/teacher/content", {
+        data: bodyData,
+      }),
+
+    onSuccess: () =>
+      toast({
+        title: "Deleted",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      }),
+    onError: (e) => {
+      toast({
+        title: "Somthing went wrong",
+        status: "error",
+        description: e.response.data.error.msg,
+        duration: 9000,
+        isClosable: true,
+      });
+    },
+    onSettled: () => queryClient.invalidateQueries(["courses", "teachers"]),
+  });
 
   const uploadContent = useMutation({
     mutationKey: ["courses"],
@@ -69,7 +116,7 @@ export default function Courses() {
         duration: 9000,
         isClosable: true,
       }),
-    onSettled: () => queryClient.invalidateQueries(["courses", "teachers"]),
+    onSettled: () => queryClient.invalidateQueries(["courses"]),
   });
 
   const toast = useToast();
@@ -177,10 +224,11 @@ export default function Courses() {
                 <Tr>
                   <Th>Course</Th>
                   <Th>Level</Th>
+                  <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {/* {getCourses.isLoading ? (
+                {getCourses.isLoading ? (
                   <Tr>
                     <Td colSpan={4}>
                       <Spinner />
@@ -189,11 +237,59 @@ export default function Courses() {
                 ) : (
                   getCourses.data?.data.map((course) => (
                     <Tr key={course.subject_id}>
-                      <Th w="max-content">{course.subject_name}</Th>
-                      <Th>{course.level}</Th>
+                      <Td w="max-content">{course.subject_name}</Td>
+                      <Td>{course.level}</Td>
+                      <Td>
+                        <Popover>
+                          <PopoverTrigger>
+                            <Button bg="prim" colorScheme={"purple"}>
+                              Show Contents
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent w="full" maxW="20rem">
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader>Contents</PopoverHeader>
+                            <PopoverBody
+                              flexDir="column"
+                              display={"flex"}
+                              gap="1rem"
+                              w="full"
+                              maxW="20rem"
+                              p="1.5rem"
+                            >
+                              {course.content.length !== 0
+                                ? course.content.map((c) => (
+                                    <HStack
+                                      key={c._id}
+                                      justifyContent={"space-between"}
+                                      spacing={"0"}
+                                      p="1rem"
+                                    >
+                                      <Heading fontSize={"sm"}>
+                                        {c.title}
+                                      </Heading>
+                                      <Button
+                                        colorScheme={"red"}
+                                        onClick={() =>
+                                          deleteContent.mutate({
+                                            subject_name: course.subject_name,
+                                            title: c.title,
+                                          })
+                                        }
+                                      >
+                                        <FaTrash />
+                                      </Button>
+                                    </HStack>
+                                  ))
+                                : "No content assigned yet"}
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      </Td>
                     </Tr>
                   ))
-                )} */}
+                )}
               </Tbody>
             </Table>
           </TableContainer>

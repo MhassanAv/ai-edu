@@ -130,7 +130,7 @@ export default function Layout({ children }) {
                 Payment Details
               </Button>
             ) : null}
-            {user.role === "student" || user.role === "instractor" ? (
+            {user.role === "student" || user.role === "teacher" ? (
               <Button
                 onClick={() => setPage("Exams")}
                 leftIcon={<MdFileOpen size="25px" />}
