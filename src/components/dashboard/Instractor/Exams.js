@@ -165,9 +165,16 @@ export default function Exams() {
       onClose();
     }
     return (
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay backdropFilter={"blur(20px)"} />
-        <ModalContent as="form" onSubmit={handleSubmit(onSubmit)} maxH="70vh">
+        <ModalContent
+          as="form"
+          onSubmit={handleSubmit(onSubmit)}
+          w="full"
+          m="0"
+          h="100vh"
+          maxW="full"
+        >
           <ModalHeader>New Exam</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6} maxH="70vh" overflowY={"scroll"}>
@@ -234,7 +241,7 @@ export default function Exams() {
               <>
                 <FormControl isInvalid={errors["q" + item]} isRequired>
                   <FormLabel htmlFor={`q${item}`}>
-                    {"question" + item}
+                    {"Question" + item}
                   </FormLabel>
                   <Input
                     placeholder="question"
@@ -331,8 +338,7 @@ export default function Exams() {
               </>
             ))}
           </ModalBody>
-
-          <ModalFooter>
+          <ModalFooter pt="6rem">
             <Button colorScheme="purple" type="submit" mr={3}>
               Save
             </Button>
@@ -374,9 +380,10 @@ export default function Exams() {
         boxShadow={"lg"}
         p="2rem"
         bg={useColorModeValue("white", "gray.800")}
+        h="full"
       >
         <Heading fontSize={"textSizeReg"}>Exams</Heading>
-        <Box maxH="50vh" h="auto" overflowY={"scroll"} w="full">
+        <Box h="full" overflowY={"scroll"} w="full">
           <TableContainer w="full">
             <Table variant="simple" colorScheme="purple">
               <Thead>

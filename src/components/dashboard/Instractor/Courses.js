@@ -45,7 +45,7 @@ import axios from "axios";
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import useStore from "@/lib/store";
-import { FaTrash } from "react-icons/fa";
+import { FaEye, FaTrash } from "react-icons/fa";
 
 export default function Courses() {
   const queryClient = useQueryClient();
@@ -70,6 +70,7 @@ export default function Courses() {
         params: { user_id: user.user_id },
       }),
   });
+  console.log(getCourses.data?.data);
 
   const deleteContent = useMutation({
     mutationKey: ["courses"],
@@ -111,8 +112,15 @@ export default function Courses() {
       ),
     onSuccess: () =>
       toast({
-        title: "Modified",
+        title: "Uploaded successfully",
         status: "success",
+        duration: 9000,
+        isClosable: true,
+      }),
+    onError: () =>
+      toast({
+        title: "Something went wrong",
+        status: "error",
         duration: 9000,
         isClosable: true,
       }),
@@ -125,24 +133,32 @@ export default function Courses() {
     function onSubmit(values) {
       const file = getValues("pdf").item(0);
       uploadContent.mutate({ ...values, pdf: file });
-      console.log({ ...values, pdf: file });
       onCloseAdd();
     }
     return (
       <Modal isOpen={isOpenAdd} onClose={onCloseAdd}>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>Edit</ModalHeader>
+          <ModalHeader>Add Content</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl isInvalid={errors.subject_name} isRequired>
               <FormLabel htmlFor="subject_name">Subject</FormLabel>
-              <Input
-                type="text"
+              <Select
+                placeholder="Select a Course"
                 {...register("subject_name", {
                   required: "This is required",
                 })}
-              />
+              >
+                {getCourses.data?.data.map((teacherCourse) => (
+                  <option
+                    key={teacherCourse.subject_id}
+                    value={teacherCourse.subject_name}
+                  >
+                    {teacherCourse.subject_name}
+                  </option>
+                ))}
+              </Select>
 
               <FormErrorMessage>
                 {errors.subject_name && errors.subject_name.message}
@@ -205,7 +221,7 @@ export default function Courses() {
           boxSize={"3rem"}
           p="0.5rem"
         />
-        <Heading fontSize={"sm"}>Add A New Course</Heading>
+        <Heading fontSize={"sm"}>Add A New Content</Heading>
       </Center>
       <VStack
         w="full"
@@ -246,7 +262,7 @@ export default function Courses() {
                               Show Contents
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent w="full" maxW="20rem">
+                          <PopoverContent w="28rem">
                             <PopoverArrow />
                             <PopoverCloseButton />
                             <PopoverHeader>Contents</PopoverHeader>
@@ -255,7 +271,7 @@ export default function Courses() {
                               display={"flex"}
                               gap="1rem"
                               w="full"
-                              maxW="20rem"
+                              maxW="50rem"
                               p="1.5rem"
                             >
                               {course.content.length !== 0
@@ -269,17 +285,27 @@ export default function Courses() {
                                       <Heading fontSize={"sm"}>
                                         {c.title}
                                       </Heading>
-                                      <Button
-                                        colorScheme={"red"}
-                                        onClick={() =>
-                                          deleteContent.mutate({
-                                            subject_name: course.subject_name,
-                                            title: c.title,
-                                          })
-                                        }
-                                      >
-                                        <FaTrash />
-                                      </Button>
+                                      <HStack>
+                                        <Button
+                                          colorScheme={"blue"}
+                                          as={"a"}
+                                          href={`http://localhost:3000${c.path}`}
+                                          target="_blank"
+                                        >
+                                          <FaEye />
+                                        </Button>
+                                        <Button
+                                          colorScheme={"red"}
+                                          onClick={() =>
+                                            deleteContent.mutate({
+                                              subject_name: course.subject_name,
+                                              title: c.title,
+                                            })
+                                          }
+                                        >
+                                          <FaTrash />
+                                        </Button>
+                                      </HStack>
                                     </HStack>
                                   ))
                                 : "No content assigned yet"}
