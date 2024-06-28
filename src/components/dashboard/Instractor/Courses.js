@@ -70,7 +70,6 @@ export default function Courses() {
         params: { user_id: user.user_id },
       }),
   });
-  console.log(getCourses.data?.data);
 
   const deleteContent = useMutation({
     mutationKey: ["courses"],
@@ -230,7 +229,7 @@ export default function Courses() {
         boxShadow={"lg"}
         p="2rem"
         bg={useColorModeValue("white", "gray.800")}
-        h="50vh"
+        h="full"
       >
         <Heading fontSize={"textSizeReg"}>Courses</Heading>
         <Box h="full" overflowY={"scroll"} w="full">

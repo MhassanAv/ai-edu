@@ -40,7 +40,6 @@ import { FaTrash } from "react-icons/fa";
 export default function Exams() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [qnum, setQnum] = useState(0);
-  console.log(qnum);
   const queryClient = useQueryClient();
   const { user } = useStore();
   const {
@@ -65,6 +64,7 @@ export default function Exams() {
         params: { user_id: user.user_id },
       }),
   });
+
   console.log(getExams.data?.data);
 
   const uploadExam = useMutation({
@@ -150,14 +150,13 @@ export default function Exams() {
       uploadExam.mutate({
         ...filteredValues,
         teacher_id: user.user_id,
-        startAt: new Date().toISOString(),
         level: subjectLevel,
         questions: questions,
       });
+
       console.log({
         ...filteredValues,
         teacher_id: user.user_id,
-        startAt: new Date().toISOString(),
         level: subjectLevel,
         questions: questions,
       });
@@ -226,6 +225,22 @@ export default function Exams() {
                 {errors.duration && errors.duration.message}
               </FormErrorMessage>
             </FormControl>
+
+            <FormControl isInvalid={errors.startAt} isRequired>
+              <FormLabel htmlFor="startAt">Start At</FormLabel>
+              <Input
+                type="datetime-local"
+                placeholder="select a date"
+                {...register("startAt", {
+                  required: true,
+                })}
+              />
+
+              <FormErrorMessage>
+                {errors.startAt && errors.startAt.message}
+              </FormErrorMessage>
+            </FormControl>
+
             <Heading fontSize={"md"} my="1rem">
               Questions
             </Heading>
@@ -321,14 +336,20 @@ export default function Exams() {
                   <FormLabel htmlFor={`q${item}correct`}>
                     {"Correct Answer"}
                   </FormLabel>
-                  <Input
+                  <Select
                     placeholder="correct"
                     type="number"
                     {...register(`q${item}correct`, {
                       required: "This is required",
                       valueAsNumber: true,
                     })}
-                  />
+                  >
+                    {["A1", "A2", "A3", "A4"].map((item, index) => (
+                      <option key={item + index + qnum} value={index}>
+                        {item}
+                      </option>
+                    ))}
+                  </Select>
 
                   <FormErrorMessage>
                     {errors["q" + item + "correct"] &&
@@ -380,7 +401,7 @@ export default function Exams() {
         boxShadow={"lg"}
         p="2rem"
         bg={useColorModeValue("white", "gray.800")}
-        h="full"
+        h="50vh"
       >
         <Heading fontSize={"textSizeReg"}>Exams</Heading>
         <Box h="full" overflowY={"scroll"} w="full">
@@ -404,7 +425,7 @@ export default function Exams() {
                   </Tr>
                 ) : (
                   getExams.data?.data.map((exam, index) => (
-                    <Tr key={exam.subject_id}>
+                    <Tr key={exam._id}>
                       <Td>{index + 1}</Td>
                       <Td w="max-content">
                         {
@@ -422,9 +443,7 @@ export default function Exams() {
                         <Button
                           colorScheme={"red"}
                           onClick={() =>
-                            deleteExam.mutate({
-                              exam_id: exam._id,
-                            })
+                            deleteExam.mutate({ exam_id: exam._id })
                           }
                         >
                           <FaTrash />
