@@ -65,8 +65,6 @@ export default function Exams() {
       }),
   });
 
-  console.log(getExams.data?.data);
-
   const uploadExam = useMutation({
     mutationKey: ["exams"],
     mutationFn: async (bodyData) =>

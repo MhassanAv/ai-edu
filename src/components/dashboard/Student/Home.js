@@ -59,6 +59,14 @@ export default function Home() {
       }),
   });
 
+  const getResults = useQuery({
+    queryKey: ["results"],
+    queryFn: async () =>
+      await axios.get("http://localhost:3000/api/v1/student/exam-result", {
+        params: { level: user.level },
+      }),
+  });
+
   return (
     <>
       <HStack w="full" spacing={"2rem"}>
@@ -130,7 +138,7 @@ export default function Home() {
         boxShadow={"lg"}
         p="2rem"
         bg={useColorModeValue("white", "gray.800")}
-        h="50vh"
+        h="full"
       >
         <Heading fontSize={"textSizeReg"}>Courses</Heading>
         <Box h="full" overflowY={"scroll"} w="full">
